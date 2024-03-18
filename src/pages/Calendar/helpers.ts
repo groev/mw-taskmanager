@@ -20,6 +20,9 @@ async function deleteEvent(id: string) {
 }
 
 async function addEvent(event: CalendarEvent) {
+  const user = auth.currentUser?.uid;
+  if (!user) return;
+  event.user = user;
   return await addDoc(collection(db, "events"), event);
 }
 

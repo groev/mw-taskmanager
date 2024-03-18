@@ -20,7 +20,6 @@ export default function Eventform() {
     let lastEvent = {
       day: new Date(day).toISOString().split("T")[0],
       endSlot: 0,
-      startSlot: 0,
     } as CalendarEvent;
 
     if (events?.length > 0) {
