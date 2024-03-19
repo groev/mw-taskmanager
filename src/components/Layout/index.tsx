@@ -11,11 +11,19 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconLogout } from "@tabler/icons-react";
 import { useIsFetching } from "@tanstack/react-query";
 
+
 import { useAuthContext } from "@/context/AuthContext";
+
 import Logo from "@/images/Logo";
 
+
 import ColorScheme from "./ColorScheme";
+
 import Nav from "./Nav";
+
+
+import classes from "./layout.module.css";
+
 
 export default function Layout() {
   const { signout } = useAuthContext();
@@ -31,13 +39,7 @@ export default function Layout() {
         collapsed: { mobile: !opened },
       }}
     >
-      <AppShell.Header
-        withBorder={false}
-        style={{
-          borderBottom: "1px solid var(--mantine-color-dark-5)",
-          zIndex: 999999,
-        }}
-      >
+      <AppShell.Header withBorder={false} className={classes.header}>
         <Group h="100%" px="md">
           <Group justify="space-between" style={{ flex: 1 }}>
             <Group align="center">

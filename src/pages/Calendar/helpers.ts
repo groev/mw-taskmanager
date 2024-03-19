@@ -9,7 +9,9 @@ import {
   QuerySnapshot,
 } from "firebase/firestore";
 
+
 import { auth, db } from "@/firebase";
+
 
 async function updateEvent(id: string, data: CalendarEvent) {
   return await updateDoc(doc(db, "events", id), data);
@@ -104,15 +106,9 @@ function mapFirestore(snapshot: QuerySnapshot) {
 }
 
 function getQuery(day: string) {
-  // get monday of week
-
-  const tomorrow = new Date(day);
-  tomorrow.setDate(tomorrow.getDate() + 1);
   const days = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(day);
-    const dayOfWeek = date.getDay();
-    const diff = date.getDate() - dayOfWeek + (dayOfWeek == 0 ? -6 : 1); // adjust when day is sunday
-    const monday = new Date(date.setDate(diff));
+    const monday = getMondayOfWeek(new Date(day));
+
     monday.setDate(monday.getDate() + i);
     return monday;
   }).map((date) => isoDate(date));

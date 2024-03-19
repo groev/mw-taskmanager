@@ -43,11 +43,15 @@
   &.active {
     &,
     &:hover {
-      background-color: var(--mantine-color-dark-light);
-      color: var(--mantine-color-dark-light-color);
+      transition: all 0.2s ease;
+      background-color: light-dark(
+        var(--mantine-color-dark-0),
+        var(--mantine-color-dark-6)
+      );
+      color: var(--mantine-color-text);
 
       & .linkIcon {
-        color: var(--mantine-color-dark-light-color);
+        color: var(--mantine-color-text);
       }
     }
   }
@@ -64,4 +68,11 @@
   border-top: rem(1px) solid
     light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
   padding-top: var(--mantine-spacing-md);
+}
+
+.header {
+  border-bottom: 1px solid
+    light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+
+  z-index: 9999;
 }

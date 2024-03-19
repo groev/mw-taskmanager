@@ -1,15 +1,35 @@
 import ReactDOM from "react-dom/client";
-import { createTheme, MantineProvider } from "@mantine/core";
+import {
+  createTheme,
+  MantineColorsTuple,
+  MantineProvider,
+} from "@mantine/core";
 import "@mantine/core/styles.css";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 import App from "./App.tsx";
 import { AuthContextProvider } from "./context/AuthContext.tsx";
 
+const slate: MantineColorsTuple = [
+  "#f1f5f9",
+  "#e2e8f0",
+  "#cbd5e1",
+  "#94a3b8",
+  "#64748b",
+  "#475569",
+  "#334155",
+  "#1e293b",
+  "#0f172a",
+  "#020617",
+];
+
 const theme = createTheme({
   fontFamily: "'Inter', sans-serif",
   primaryColor: "dark",
   primaryShade: 9,
+  colors: {
+    dark: slate,
+  },
 });
 
 const queryClient = new QueryClient({

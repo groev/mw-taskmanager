@@ -3,7 +3,10 @@
   --fc-page-bg-color: transparent;
   --fc-neutral-bg-color: transparent;
   --fc-neutral-text-color: #808080;
-  --fc-border-color: var(--mantine-color-dark-6);
+  --fc-border-color: light-dark(
+    var(--mantine-color-gray-3),
+    var(--mantine-color-dark-8)
+  );
 
   --fc-button-text-color: #fff;
   --fc-button-bg-color: transparent;
