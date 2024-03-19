@@ -2,8 +2,8 @@ type CalendarEvent = {
   id?: string;
   title?: string;
   day?: string;
-  startSlot: number;
-  endSlot: number;
+  startSlot?: number;
+  endSlot?: number;
   startEditable?: boolean;
   durationEditable?: boolean;
   checked?: boolean;

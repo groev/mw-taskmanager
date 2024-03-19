@@ -40,8 +40,11 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
   };
 
   const mutation = useMutation({
-    mutationFn: (checked: boolean) =>
-      updateEvent(data.id, { ...data, checked: checked }),
+    mutationFn: (checked: boolean) => {
+      const event = { checked: checked };
+
+      return updateEvent(data.id, event);
+    },
   });
 
   const deselect = () => {

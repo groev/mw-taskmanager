@@ -35,6 +35,7 @@ export default function Eventform() {
         return prev.startSlot > current.startSlot ? prev : current;
       }, lastEvent);
     }
+    if (typeof lastEvent.endSlot === "undefined") return;
 
     const event = {
       day: lastEvent.day,

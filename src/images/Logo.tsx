@@ -4,7 +4,7 @@ export default function Logo({ height = 100 }: { height?: number }) {
   const colorScheme = useColorScheme();
   const color =
     colorScheme === "dark"
-      ? "var(--mantine-color-dark-6)"
+      ? "var(--mantine-color-dark-4)"
       : "var(--mantine-color-dark-1)";
 
   return (

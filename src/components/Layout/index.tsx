@@ -80,7 +80,7 @@ export default function Layout() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar>
-        <Nav close={close} />
+        <Nav onClose={close} />
         <Button
           size="md"
           variant="light"

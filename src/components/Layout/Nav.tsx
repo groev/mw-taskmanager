@@ -5,7 +5,7 @@ import classes from "./layout.module.css";
 
 // get active menu item
 
-export default function Nav({ close }: { close: () => void }) {
+export default function Nav({ onClose }: { onClose: () => void }) {
   const linkItems = [
     { href: "/", label: "Calendar", icon: IconCalendar },
     { href: "/documents", label: "Documents", icon: IconListCheck },
@@ -14,7 +14,7 @@ export default function Nav({ close }: { close: () => void }) {
 
   const links = linkItems.map((item) => (
     <NavLink
-      onClick={close}
+      onClick={() => onClose()}
       className={({ isActive }) => {
         return isActive ? `${classes.active} ${classes.link}` : classes.link;
       }}
