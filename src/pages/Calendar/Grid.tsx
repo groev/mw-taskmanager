@@ -5,6 +5,7 @@ import deLocale from "@fullcalendar/core/locales/de";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import { useViewportSize } from "@mantine/hooks";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -23,6 +24,7 @@ export default function Daygrid() {
   const day = useCalendarStore((state) => state.day);
   const events = useCalendarStore((state) => state.events);
   const setEvents = useCalendarStore((state) => state.setEvents);
+  const { width } = useViewportSize();
 
   const { msToken } = useAuthContext();
   const setSelectedSlot = useCalendarStore((state) => state.setSelectedSlot);
@@ -37,6 +39,8 @@ export default function Daygrid() {
             ...doc.data(),
           } as CalendarEvent)
       );
+      console.log(data);
+      console.log(mapEvents(data));
       setEvents(data);
     });
     return () => unsubscribe();
@@ -50,7 +54,14 @@ export default function Daygrid() {
 
   const calRef = useRef<FullCalendar>(null);
 
-  useEffect(() => {});
+  useEffect(() => {
+    if (!calRef.current) return;
+    if (width > 768) {
+      calRef.current.getApi().changeView("timeGridWeek");
+    } else {
+      calRef.current.getApi().changeView("timeGridDay");
+    }
+  }, [width, calRef]);
 
   useEffect(() => {
     const date = new Date(day);
@@ -74,7 +85,7 @@ export default function Daygrid() {
       allDaySlot={false}
       slotMinTime={"06:00:00"}
       slotMaxTime={"23:00:00"}
-      height="calc(100vh - 50px)"
+      height="calc(100vh - 100px)"
       contentHeight={15000}
       editable={true}
       initialDate={day}

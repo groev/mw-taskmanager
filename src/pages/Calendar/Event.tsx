@@ -11,26 +11,37 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
 
   const isMs = data.extendedProps.type === "ms";
   const getColor = (data: FullCalendarEvent) => {
-    const stripedBg = `repeating-linear-gradient(
-      45deg,
-      var(--mantine-color-gray-5),
-      var(--mantine-color-gray-5) 5px,
-      var(--mantine-color-gray-6) 5px,
-      var(--mantine-color-gray-6) 10px
-    )`;
-
     if (data.extendedProps.checked && selectedEvent?.id == data.id)
-      return `var(--mantine-color-green-5)`;
-    if (data.extendedProps.checked) return `var(--mantine-color-green-8)`;
+      return {
+        background: `var(--mantine-color-green-8)`,
+        text: "white",
+      };
+    if (data.extendedProps.checked)
+      return {
+        background: `var(--mantine-color-green-3)`,
+        text: "var(--mantine-color-dark-8)",
+      };
 
-    if (selectedEvent?.id == data.id) return `var(--mantine-color-orange-6)`;
+    if (selectedEvent?.id == data.id)
+      return {
+        background: `var(--mantine-color-dark-5)`,
+        text: "white",
+      };
 
-    if (isMs) return stripedBg;
-    return `var(--mantine-color-gray-5)`;
+    if (isMs)
+      return {
+        background: `var(--mantine-color-pink-3)`,
+        text: "var(--mantine-color-dark-8)",
+      };
+    return {
+      background: `var(--mantine-color-dark-2)`,
+      text: "var(--mantine-color-dark-8)",
+    };
   };
 
   const mutation = useMutation({
-    mutationFn: (checked: boolean) => updateEvent(data.id, { checked }),
+    mutationFn: (checked: boolean) =>
+      updateEvent(data.id, { ...data, checked: checked }),
   });
 
   const deselect = () => {
@@ -45,18 +56,13 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
     }
   };
 
+  const color = getColor(data);
+
   return (
     <ClickAwayListener onClickAway={deselect}>
       <Flex h={"100%"} onClick={() => select()}>
         <Card
-          shadow="xs"
-          bg={getColor(data)}
-          style={{
-            border: "1px solid var(--mantine-color-dark-5)",
-            borderLeft: "4px solid var(--mantine-color-dark-3)",
-
-            borderTop: "0px transparent",
-          }}
+          bg={color.background}
           pl={8}
           pt={2}
           pr={8}
@@ -65,7 +71,7 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
           h={"100%"}
         >
           <Group justify="space-between" align="center">
-            <Text fz={12} c="background" fw={500}>
+            <Text fz={12} c={color.text} fw={500}>
               {data.title}
             </Text>
             {!isMs && (

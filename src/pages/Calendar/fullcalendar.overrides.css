@@ -3,11 +3,6 @@
   --fc-page-bg-color: transparent;
   --fc-neutral-bg-color: transparent;
   --fc-neutral-text-color: #808080;
-  --fc-border-color: light-dark(
-    var(--mantine-color-gray-3),
-    var(--mantine-color-dark-8)
-  );
-
   --fc-button-text-color: #fff;
   --fc-button-bg-color: transparent;
   --fc-button-border-color: #2c3e50;
@@ -66,4 +61,12 @@
 
 .fc-scrollgrid-section-header .fc-scroller {
   overflow: hidden !important;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border-color: light-dark(
+    var(--mantine-color-dark-1),
+    var(--mantine-color-dark-6)
+  );
 }

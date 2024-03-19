@@ -1,10 +1,12 @@
-export default function Logo({
-  color = "#FFF",
-  height = 100,
-}: {
-  color?: string;
-  height?: number;
-}) {
+import { useColorScheme } from "@mantine/hooks";
+
+export default function Logo({ height = 100 }: { height?: number }) {
+  const colorScheme = useColorScheme();
+  const color =
+    colorScheme === "dark"
+      ? "var(--mantine-color-dark-6)"
+      : "var(--mantine-color-dark-1)";
+
   return (
     <svg
       version="1.1"

@@ -11,24 +11,21 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconLogout } from "@tabler/icons-react";
 import { useIsFetching } from "@tanstack/react-query";
 
-
 import { useAuthContext } from "@/context/AuthContext";
 
 import Logo from "@/images/Logo";
-
 
 import ColorScheme from "./ColorScheme";
 
 import Nav from "./Nav";
 
-
 import classes from "./layout.module.css";
-
 
 export default function Layout() {
   const { signout } = useAuthContext();
   const isFetching = useIsFetching();
-  const [opened, { toggle }] = useDisclosure();
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
   return (
     <AppShell
@@ -36,7 +33,7 @@ export default function Layout() {
       navbar={{
         width: 300,
         breakpoint: "sm",
-        collapsed: { mobile: !opened },
+        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
     >
       <AppShell.Header withBorder={false} className={classes.header}>
@@ -44,12 +41,19 @@ export default function Layout() {
           <Group justify="space-between" style={{ flex: 1 }}>
             <Group align="center">
               <Burger
-                opened={opened}
-                onClick={toggle}
                 hiddenFrom="sm"
+                opened={mobileOpened}
+                onClick={toggleMobile}
                 size="sm"
               />
-              <Logo height={40} color="var(--mantine-color-text)" />
+              <Burger
+                opened={desktopOpened}
+                visibleFrom="sm"
+                onClick={toggleDesktop}
+                size="sm"
+              />
+
+              <Logo height={40} />
               {isFetching && <Loader color="dark" size="xs" />}
             </Group>
             <Group>
@@ -76,7 +80,7 @@ export default function Layout() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar>
-        <Nav />
+        <Nav close={close} />
         <Button
           size="md"
           variant="light"

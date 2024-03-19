@@ -263,11 +263,12 @@ export default function Page() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
+                            if (newItem === "") return;
                             arrayHelpers.push({
                               title: newItem,
                               checked: false,
                             });
-                            setNewItem("");
+                            return setNewItem("");
                           }
                         }}
                       ></TextInput>
@@ -277,10 +278,11 @@ export default function Page() {
                         leftSection={<IconPlus />}
                         onClick={() => {
                           if (newItem === "") return;
-                          return arrayHelpers.push({
+                          arrayHelpers.push({
                             title: newItem,
                             checked: false,
                           });
+                          return setNewItem("");
                         }}
                       >
                         Add item

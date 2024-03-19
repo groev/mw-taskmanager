@@ -26,7 +26,7 @@ const slate: MantineColorsTuple = [
 const theme = createTheme({
   fontFamily: "'Inter', sans-serif",
   primaryColor: "dark",
-  primaryShade: 9,
+  primaryShade: 6,
   colors: {
     dark: slate,
   },

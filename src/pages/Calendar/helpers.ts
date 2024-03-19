@@ -9,9 +9,7 @@ import {
   QuerySnapshot,
 } from "firebase/firestore";
 
-
 import { auth, db } from "@/firebase";
-
 
 async function updateEvent(id: string, data: CalendarEvent) {
   return await updateDoc(doc(db, "events", id), data);
@@ -86,7 +84,14 @@ function isoDate(date: Date) {
 
 function mapEvents(events: CalendarEvent[]) {
   return events?.map((event) => {
-    if (!event.day || !event.startSlot || !event.endSlot) return null;
+    // check if event.startSlot and endSlot is a positive number or zero and if day exists
+    if (
+      typeof event.startSlot !== "number" ||
+      typeof event.endSlot !== "number" ||
+      !event.day
+    )
+      return;
+
     return {
       color: "transparent",
       id: event.id,

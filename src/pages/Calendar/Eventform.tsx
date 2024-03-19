@@ -6,6 +6,7 @@ import { IconPlus, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 
 import { addEvent } from "./helpers";
 import { useCalendarStore } from "./store";
+import { useViewportSize } from "@mantine/hooks";
 
 export default function Eventform() {
   const selectedSlot = useCalendarStore((state) => state.selectedSlot);
@@ -13,6 +14,7 @@ export default function Eventform() {
   const events = useCalendarStore((state) => state.events);
   const changeDay = useCalendarStore((state) => state.changeDay);
   const day = useCalendarStore((state) => state.day);
+  const { width } = useViewportSize();
 
   const [title, setTitle] = useState("");
 
@@ -34,12 +36,11 @@ export default function Eventform() {
       }, lastEvent);
     }
 
-    if (!lastEvent.endSlot) return;
     const event = {
       day: lastEvent.day,
       title: title,
       startSlot: lastEvent.endSlot,
-      endSlot: lastEvent?.endSlot + 2,
+      endSlot: lastEvent.endSlot + 2,
       checked: false,
     };
     if (event.endSlot > 68) {
@@ -77,8 +78,8 @@ export default function Eventform() {
       className="form"
     >
       <Group
-        pos="absolute"
-        bottom="0"
+        pos={width > 768 ? "absolute" : "fixed"}
+        bottom={0}
         py={0}
         align="center"
         h={50}
@@ -95,11 +96,9 @@ export default function Eventform() {
           <ActionIcon variant="transparent" onClick={() => changeDay(-1)}>
             <IconArrowLeft />
           </ActionIcon>
-          <Group justify="stretch" gap={4}>
+          <Group maw={"400px"} flex={1} justify="stretch" gap={4}>
             <TextInput
               placeholder="Add activity"
-              miw={"15vw"}
-              w={200}
               flex={1}
               id="input"
               value={title}
@@ -107,6 +106,7 @@ export default function Eventform() {
             />
 
             <Button
+              visibleFrom="sm"
               leftSection={<IconPlus size={"1rem"} />}
               disabled={title.length === 0}
               type="submit"
@@ -114,6 +114,9 @@ export default function Eventform() {
             >
               Add
             </Button>
+            <ActionIcon hiddenFrom="sm" size="lg" onClick={() => addNewEvent()}>
+              <IconPlus size={"1rem"} />
+            </ActionIcon>
           </Group>
           <ActionIcon variant="transparent" onClick={() => changeDay(1)}>
             <IconArrowRight />

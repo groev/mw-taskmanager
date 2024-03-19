@@ -36,7 +36,7 @@ export default function Home() {
     <Container>
       <Center h={"100vh"}>
         <Stack>
-          <Logo height={200} color="var(--mantine-color-text)" />
+          <Logo height={200} />
           <Divider label="Wähle deinen Login" labelPosition="center" />
           <Stack>
             <Button
