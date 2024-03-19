@@ -7,10 +7,16 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { Button, Center, Container, Divider, Stack } from "@mantine/core";
-import { IconBrandGoogle, IconBrandWindows } from "@tabler/icons-react";
+import {
+  IconBrandGithub,
+  IconBrandGoogle,
+  IconBrandWindows,
+} from "@tabler/icons-react";
+
 
 import { useAuthContext } from "@/context/AuthContext";
 import Logo from "@/images/Logo";
+
 
 export default function Home() {
   const auth = getAuth();
@@ -18,6 +24,11 @@ export default function Home() {
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+  };
+
+  const handleGithubSignIn = async () => {
+    const provider = new OAuthProvider("github.com");
     await signInWithPopup(auth, provider);
   };
 
@@ -56,6 +67,15 @@ export default function Home() {
               onClick={() => handleMicrosoftLogin()}
             >
               Microsoft
+            </Button>
+            <Button
+              leftSection={<IconBrandGithub />}
+              fullWidth
+              variant="outline"
+              size="md"
+              onClick={() => handleGithubSignIn()}
+            >
+              Github
             </Button>
           </Stack>
         </Stack>

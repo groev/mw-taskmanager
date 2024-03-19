@@ -32,7 +32,9 @@ import {
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 
+
 import { db, auth } from "@/firebase";
+
 
 export default function Page() {
   const [newItem, setNewItem] = useState("");
@@ -48,7 +50,7 @@ export default function Page() {
     user: "",
   });
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["list", id],
     retry: false,
     queryFn: async () => {
@@ -82,7 +84,10 @@ export default function Page() {
       if (!id) return;
       const docRef = doc(db, "lists", id);
       delete listToUpdate?.id;
-      return await setDoc(docRef, listToUpdate);
+      await setDoc(docRef, listToUpdate);
+      setInitialValues(listToUpdate);
+
+      return refetch();
     },
   });
 
@@ -93,7 +98,7 @@ export default function Page() {
       listToInsert.user = auth.currentUser?.uid;
       const doc = await addDoc(collection(db, "lists"), listToInsert);
       navigate(`/lists/${doc.id}`);
-      return;
+      return refetch();
     },
   });
 
@@ -122,12 +127,12 @@ export default function Page() {
       {isLoading && <Loader />}
       <Formik
         enableReinitialize
-        onSubmit={(values) =>
-          isNew ? createList.mutate(values) : saveList.mutate(values)
-        }
+        onSubmit={(values) => {
+          isNew ? createList.mutate(values) : saveList.mutate(values);
+        }}
         initialValues={initialValues}
       >
-        {({ values }) => {
+        {({ values, dirty }) => {
           return (
             <Form>
               <Group mb="xl" align="center" justify="space-between">
@@ -179,7 +184,7 @@ export default function Page() {
                       </Popover>
                     </>
                   )}
-                  {isNew ? (
+                  {isNew && (
                     <Button
                       type="submit"
                       variant="outline"
@@ -188,7 +193,8 @@ export default function Page() {
                     >
                       Create List
                     </Button>
-                  ) : (
+                  )}
+                  {!isNew && dirty && (
                     <Button
                       type="submit"
                       variant="outline"

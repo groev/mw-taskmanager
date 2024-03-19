@@ -2,8 +2,10 @@ import ClickAwayListener from "react-click-away-listener";
 import { Flex, Card, Text, Checkbox, Group } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 
+
 import { updateEvent } from "./helpers";
 import { useCalendarStore } from "./store";
+
 
 export default function Event({ data }: { data: FullCalendarEvent }) {
   const setSelectedEvent = useCalendarStore((state) => state.setSelectedEvent);
@@ -63,17 +65,15 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
 
   return (
     <ClickAwayListener onClickAway={deselect}>
-      <Flex h={"100%"} onClick={() => select()}>
-        <Card
-          bg={color.background}
-          pl={8}
-          pt={2}
-          pr={8}
-          pb={2}
-          w={"100%"}
-          h={"100%"}
-        >
-          <Group justify="space-between" align="center">
+      <Flex
+        style={{
+          pointerEvents: isMs ? "none" : "auto",
+        }}
+        h={"100%"}
+        onClick={() => select()}
+      >
+        <Card bg={color.background} p={8} w={"100%"} h={"100%"}>
+          <Group gap={2} justify="space-between" align="center">
             <Text fz={12} c={color.text} fw={500}>
               {data.title}
             </Text>
