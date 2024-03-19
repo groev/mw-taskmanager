@@ -12,6 +12,9 @@ export default function Keybindings() {
       <KeyBinding
         onKey={(e) => {
           switch (e.code) {
+            case "Backspace":
+              if (selectedEvent?.id) deleteEvent(selectedEvent.id);
+              break;
             case "Delete":
               if (selectedEvent?.id) deleteEvent(selectedEvent.id);
               break;

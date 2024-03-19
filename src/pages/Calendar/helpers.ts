@@ -16,6 +16,7 @@ async function updateEvent(id: string, data: CalendarEvent) {
 }
 
 async function deleteEvent(id: string) {
+  console.log(id);
   return await deleteDoc(doc(db, "events", id));
 }
 
