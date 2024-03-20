@@ -2,11 +2,12 @@ import { useState } from "react";
 
 import { Group, TextInput, Button, ActionIcon } from "@mantine/core";
 
+import { useViewportSize } from "@mantine/hooks";
+
 import { IconPlus, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 
 import { addEvent } from "./helpers";
 import { useCalendarStore } from "./store";
-import { useViewportSize } from "@mantine/hooks";
 
 export default function Eventform() {
   const selectedSlot = useCalendarStore((state) => state.selectedSlot);
@@ -21,7 +22,7 @@ export default function Eventform() {
   async function addNewEvent() {
     let lastEvent = {
       day: new Date(day).toISOString().split("T")[0],
-      endSlot: 0,
+      endSlot: 4,
     } as CalendarEvent;
 
     if (events?.length > 0) {
