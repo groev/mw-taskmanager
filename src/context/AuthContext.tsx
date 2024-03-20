@@ -35,15 +35,23 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
   const [msToken, setMsToken] = useState<string | null>(null);
 
   async function getNewMSToken(user: FirebaseUser) {
-    reauthenticateWithPopup(user, new OAuthProvider("microsoft.com")).then(
-      (result) => {
+    reauthenticateWithPopup(user, new OAuthProvider("microsoft.com"))
+      .then((result) => {
         const credential = OAuthProvider.credentialFromResult(result);
         const accessToken = credential?.accessToken;
-        if (!accessToken) return false;
+        if (!accessToken) {
+          localStorage.removeItem("mstoken");
+          setMsToken(null);
+          return;
+        }
         localStorage.setItem("mstoken", accessToken);
         setMsToken(accessToken);
-      }
-    );
+      })
+      .catch((error: Error) => {
+        console.error(error);
+        localStorage.removeItem("mstoken");
+        setMsToken(null);
+      });
     return true;
   }
 
