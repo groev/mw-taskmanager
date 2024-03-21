@@ -9,7 +9,9 @@ import { useViewportSize } from "@mantine/hooks";
 
 import { useQuery } from "@tanstack/react-query";
 
+
 import { useAuthContext } from "@/context/AuthContext";
+
 
 import Event from "./Event";
 import {
@@ -19,6 +21,7 @@ import {
   getQuery,
 } from "./helpers";
 import { useCalendarStore } from "./store";
+
 
 export default function Daygrid() {
   const day = useCalendarStore((state) => state.day);
@@ -39,8 +42,6 @@ export default function Daygrid() {
             ...doc.data(),
           } as CalendarEvent)
       );
-      console.log(data);
-      console.log(mapEvents(data));
       setEvents(data);
     });
     return () => unsubscribe();

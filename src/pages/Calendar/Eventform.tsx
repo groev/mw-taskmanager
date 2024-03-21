@@ -2,11 +2,12 @@ import { useState } from "react";
 
 import { Group, TextInput, Button, ActionIcon } from "@mantine/core";
 
+import { useViewportSize } from "@mantine/hooks";
+
 import { IconPlus, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 
 import { addEvent } from "./helpers";
 import { useCalendarStore } from "./store";
-import { useViewportSize } from "@mantine/hooks";
 
 export default function Eventform() {
   const selectedSlot = useCalendarStore((state) => state.selectedSlot);
@@ -15,25 +16,30 @@ export default function Eventform() {
   const changeDay = useCalendarStore((state) => state.changeDay);
   const day = useCalendarStore((state) => state.day);
   const { width } = useViewportSize();
-
+  const isMobile = width < 768;
   const [title, setTitle] = useState("");
 
   async function addNewEvent() {
     let lastEvent = {
       day: new Date(day).toISOString().split("T")[0],
-      endSlot: 0,
+      endSlot: 4,
     } as CalendarEvent;
 
     if (events?.length > 0) {
-      lastEvent = events?.reduce((prev, current) => {
-        if (!prev?.day || !prev?.startSlot) return current;
-        if (!current?.day || !current?.startSlot) return prev;
-        // compare dates and slots to find last events
-        if (prev?.day > current.day) return prev;
-        if (prev?.day < current.day) return current;
+      lastEvent = events
+        ?.filter((event) => {
+          if (isMobile) return event.day === day;
+          return true;
+        })
+        .reduce((prev, current) => {
+          if (!prev?.day || !prev?.startSlot) return current;
+          if (!current?.day || !current?.startSlot) return prev;
+          // compare dates and slots to find last events
+          if (prev?.day > current.day) return prev;
+          if (prev?.day < current.day) return current;
 
-        return prev.startSlot > current.startSlot ? prev : current;
-      }, lastEvent);
+          return prev.startSlot > current.startSlot ? prev : current;
+        }, lastEvent);
     }
     if (typeof lastEvent.endSlot === "undefined") return;
 
@@ -94,7 +100,10 @@ export default function Eventform() {
         bg={"var(--mantine-color-body)"}
       >
         <Group gap={0} justify="space-between" w="100%">
-          <ActionIcon variant="transparent" onClick={() => changeDay(-1)}>
+          <ActionIcon
+            variant="transparent"
+            onClick={() => changeDay(-1, isMobile)}
+          >
             <IconArrowLeft />
           </ActionIcon>
           <Group maw={"400px"} flex={1} justify="stretch" gap={4}>
@@ -119,7 +128,10 @@ export default function Eventform() {
               <IconPlus size={"1rem"} />
             </ActionIcon>
           </Group>
-          <ActionIcon variant="transparent" onClick={() => changeDay(1)}>
+          <ActionIcon
+            variant="transparent"
+            onClick={() => changeDay(1, isMobile)}
+          >
             <IconArrowRight />
           </ActionIcon>
         </Group>

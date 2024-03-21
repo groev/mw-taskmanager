@@ -75,7 +75,7 @@ async function fetchEventsFromMicrosoft(day: string, msToken: string | null) {
     }
     return events;
   } catch (err) {
-    console.log(err);
+    return [];
   }
 }
 

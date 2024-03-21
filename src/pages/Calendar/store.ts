@@ -14,7 +14,7 @@ interface CalendarStore {
   setSelectedEvent: (selectedEvent: FullCalendarEvent | null) => void;
   events: CalendarEvent[];
   setEvents: (events: CalendarEvent[]) => void;
-  changeDay: (offset: number) => void;
+  changeDay: (offset: number, isMobile?: boolean) => void;
 }
 
 export const useCalendarStore = create<CalendarStore>((set, get) => ({
@@ -26,7 +26,13 @@ export const useCalendarStore = create<CalendarStore>((set, get) => ({
   setSelectedEvent: (selectedEvent) => set({ selectedEvent }),
   events: [],
   setEvents: (events) => set({ events }),
-  changeDay: (offset) => {
+  changeDay: (offset, isMobile = false) => {
+    if (isMobile) {
+      const date = new Date(get().day);
+      date.setDate(date.getDate() + offset);
+      set({ day: isoDate(date) });
+      return;
+    }
     const date = new Date(get().day);
     date.setDate(date.getDate() + offset * 7);
     const dayOfWeek = date.getDay();

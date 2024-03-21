@@ -24,10 +24,12 @@ import { TextInput } from "@mantine/core";
 import { IconCheck, IconDeviceFloppy, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
+
 import Editor from "@/components/Editor";
 
 import { db, auth } from "@/firebase";
 import { Doc } from "@/types/doc";
+
 
 export default function Page() {
   const navigate = useNavigate();
@@ -108,17 +110,25 @@ export default function Page() {
     },
   });
 
+  const createDateTimeString = (date: Timestamp) => {
+    return (
+      date?.toDate().toLocaleDateString("de-DE") +
+      " " +
+      date?.toDate().toLocaleTimeString("de-DE")
+    );
+  };
+
   return (
     <Container size="md">
       {isLoading && <Loader />}
       <Formik
         enableReinitialize
-        onSubmit={(values) =>
-          isNew ? createDocument.mutate(values) : saveDocument.mutate(values)
-        }
+        onSubmit={(values) => {
+          isNew ? createDocument.mutate(values) : saveDocument.mutate(values);
+        }}
         initialValues={initialValues}
       >
-        {() => {
+        {({ dirty }) => {
           return (
             <Form>
               <Group my="xl" align="center" justify="space-between">
@@ -161,7 +171,7 @@ export default function Page() {
                       </Popover>
                     </>
                   )}
-                  {isNew ? (
+                  {isNew && (
                     <Button
                       type="submit"
                       variant="primary"
@@ -171,7 +181,8 @@ export default function Page() {
                     >
                       Create document
                     </Button>
-                  ) : (
+                  )}
+                  {dirty && !isNew && (
                     <Button
                       type="submit"
                       variant="primary"
@@ -213,21 +224,15 @@ export default function Page() {
         }}
       </Formik>
       <Group gap="xs" mt="xl">
-        {!isNew && (
+        {!isNew && initialValues.created_at && (
           <Text fz="xs" c="dimmed">
-            Created at:{" "}
-            {initialValues.created_at?.toDate().toLocaleDateString("de-DE") +
-              " " +
-              initialValues.created_at?.toDate().toLocaleTimeString("de-DE")}
+            Created at: {createDateTimeString(initialValues?.created_at)}
           </Text>
         )}
         {initialValues.updated_at && "|"}
         {initialValues.updated_at && (
           <Text fz="xs" c="dimmed">
-            Udpated at:{" "}
-            {initialValues.updated_at?.toDate().toLocaleDateString("de-DE") +
-              " " +
-              initialValues.updated_at?.toDate().toLocaleTimeString("de-DE")}
+            Updated at: {createDateTimeString(initialValues?.updated_at)}
           </Text>
         )}
       </Group>
