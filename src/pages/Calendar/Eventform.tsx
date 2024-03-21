@@ -94,6 +94,8 @@ export default function Eventform() {
         right="0"
         px={"md"}
         style={{
+          paddingBottom: `env(safe-area-inset-bottom)`,
+
           borderTop: "1px solid var(--mantine-color-dark-5)",
           zIndex: 999999,
         }}

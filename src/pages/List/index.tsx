@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   addDoc,
   collection,
@@ -7,7 +7,15 @@ import {
   setDoc,
   deleteDoc,
 } from "firebase/firestore";
-import { Formik, Form, Field, FieldArray } from "formik";
+import {
+  Formik,
+  Form,
+  Field,
+  FieldArray,
+  FieldArrayRenderProps,
+  FieldProps,
+} from "formik";
+import ClickAwayListener from "react-click-away-listener";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
@@ -32,14 +40,11 @@ import {
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-
 import { db, auth } from "@/firebase";
-
 
 export default function Page() {
   const [newItem, setNewItem] = useState("");
   const navigate = useNavigate();
-  const [itemToEdit, setItemToEdit] = useState<number | null>(null);
   const { id } = useParams();
   const isNew = id === "create";
 
@@ -218,48 +223,12 @@ export default function Page() {
                 render={(arrayHelpers) => (
                   <div>
                     {values.items?.map((_, index) => (
-                      <Card withBorder p="xs" mt="xs" key={index}>
-                        <Group>
-                          <ActionIcon
-                            variant="transparent"
-                            onClick={() => arrayHelpers.remove(index)}
-                          >
-                            <IconTrash />
-                          </ActionIcon>
-                          {}
-                          <Box flex={1} onClick={() => setItemToEdit(index)}>
-                            <Field
-                              w={"100%"}
-                              flex={1}
-                              mt=""
-                              name={`items[${index}].title`}
-                              as={TextInput}
-                              style={{
-                                pointerEvents: "auto",
-                                textDecoration: values.items[index].checked
-                                  ? "line-through"
-                                  : "none",
-                              }}
-                              variant={
-                                itemToEdit === index ? "filled" : "unstyled"
-                              }
-                              onKeyDown={(e: React.KeyboardEvent) => {
-                                {
-                                  if (e.key === "Enter") {
-                                    e.preventDefault();
-                                    setItemToEdit(null);
-                                  }
-                                }
-                              }}
-                            />
-                          </Box>
-                          <Field
-                            type="checkbox"
-                            name={`items.${index}.checked`}
-                            as={Checkbox}
-                          />
-                        </Group>
-                      </Card>
+                      <ListItem
+                        values={values}
+                        key={index}
+                        arrayHelpers={arrayHelpers}
+                        index={index}
+                      />
                     ))}
                     <Group my="xl">
                       <TextInput
@@ -304,3 +273,79 @@ export default function Page() {
     </Container>
   );
 }
+
+type ListItemProps = {
+  arrayHelpers: FieldArrayRenderProps;
+  index: number;
+  values: List;
+};
+
+const ListItem = ({ arrayHelpers, index, values }: ListItemProps) => {
+  const [isEditAble, setIsEditAble] = useState(false);
+  const ref = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditAble && ref.current) {
+      ref.current?.focus();
+    } else {
+      ref.current?.blur();
+    }
+  }, [ref, isEditAble]);
+  return (
+    <ClickAwayListener onClickAway={() => setIsEditAble(false)}>
+      <Card withBorder p="xs" mt="xs" key={index}>
+        <Group>
+          <Field type="checkbox" name={`items.${index}.checked`}>
+            {({ field }: FieldProps) => (
+              <Checkbox
+                radius="50%"
+                size="md"
+                {...field}
+                onChange={(e) => {
+                  arrayHelpers.replace(index, {
+                    ...values.items[index],
+                    checked: e.target.checked,
+                  });
+                }}
+              />
+            )}
+          </Field>
+          <Box flex={1} onClick={() => setIsEditAble(true)}>
+            <Field w={"100%"} flex={1} mt="" name={`items[${index}].title`}>
+              {({ field }: FieldProps) => (
+                <TextInput
+                  style={{
+                    pointerEvents: "auto",
+                    textDecoration: values.items[index].checked
+                      ? "line-through"
+                      : "none",
+                  }}
+                  variant={isEditAble ? "filled" : "unstyled"}
+                  {...field}
+                  ref={ref}
+                  placeholder="Item title"
+                  onKeyDown={(e: React.KeyboardEvent) => {
+                    {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        setIsEditAble(false);
+                      }
+                    }
+                  }}
+                />
+              )}
+            </Field>
+          </Box>
+          {isEditAble && (
+            <ActionIcon
+              variant="transparent"
+              onClick={() => arrayHelpers.remove(index)}
+            >
+              <IconTrash />
+            </ActionIcon>
+          )}
+        </Group>
+      </Card>
+    </ClickAwayListener>
+  );
+};
