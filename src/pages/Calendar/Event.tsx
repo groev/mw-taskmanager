@@ -1,17 +1,15 @@
 import ClickAwayListener from "react-click-away-listener";
-import { Flex, Card, Text, Checkbox, Group, ActionIcon } from "@mantine/core";
-import { useEventListener } from "@mantine/hooks";
+import { ActionIcon, Card, Checkbox, Flex, Group, Text } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 
 import { useMutation } from "@tanstack/react-query";
 
-import { updateEvent, deleteEvent } from "./helpers";
+import { deleteEvent, updateEvent } from "./helpers";
 import { useCalendarStore } from "./store";
 
 export default function Event({ data }: { data: FullCalendarEvent }) {
   const setSelectedEvent = useCalendarStore((state) => state.setSelectedEvent);
   const selectedEvent = useCalendarStore((state) => state.selectedEvent);
-  const eventRef = useEventListener("dblclick", () => alert("test"));
   const isMs = data.extendedProps.type === "ms";
   const getColor = (data: FullCalendarEvent) => {
     if (data.extendedProps.checked && selectedEvent?.id == data.id)
@@ -67,7 +65,6 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
   return (
     <ClickAwayListener onClickAway={deselect}>
       <Flex
-        ref={eventRef}
         style={{
           pointerEvents: isMs ? "none" : "auto",
         }}
