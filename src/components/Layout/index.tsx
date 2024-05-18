@@ -5,6 +5,7 @@ import {
   Group,
   ActionIcon,
   Loader,
+  Tabs,
   Burger,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -14,6 +15,8 @@ import { useIsFetching } from "@tanstack/react-query";
 import { useAuthContext } from "@/context/AuthContext";
 
 import Logo from "@/images/Logo";
+
+import Backlog from "@/pages/Calendar/Backlog";
 
 import ColorScheme from "./ColorScheme";
 
@@ -80,7 +83,28 @@ export default function Layout() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar>
-        <Nav onClose={toggleMobile} />
+        <Tabs p="xs" defaultValue={"calendar"}>
+          <Tabs.List>
+            <Tabs.Tab fz="xs" value="calendar">
+              Navigation
+            </Tabs.Tab>
+            <Tabs.Tab fz="xs" value="backlog">
+              Backlog
+            </Tabs.Tab>
+          </Tabs.List>
+          <Tabs.Panel value="calendar">
+            <Nav onClose={toggleMobile} />
+            <Button
+              size="md"
+              variant="light"
+              hiddenFrom="sm"
+              onClick={signout}
+            ></Button>
+          </Tabs.Panel>
+          <Tabs.Panel value="backlog">
+            <Backlog />
+          </Tabs.Panel>
+        </Tabs>
         <Button
           size="md"
           variant="light"

@@ -13,10 +13,8 @@ import {
   IconBrandWindows,
 } from "@tabler/icons-react";
 
-
 import { useAuthContext } from "@/context/AuthContext";
 import Logo from "@/images/Logo";
-
 
 export default function Home() {
   const auth = getAuth();
@@ -35,6 +33,8 @@ export default function Home() {
   const handleMicrosoftLogin = async () => {
     const provider = new OAuthProvider("microsoft.com");
     provider.addScope("calendars.read");
+    provider.addScope("tasks.read");
+
     const signIn = await signInWithPopup(auth, provider);
     const credential = OAuthProvider.credentialFromResult(signIn);
     const accessToken = credential?.accessToken;

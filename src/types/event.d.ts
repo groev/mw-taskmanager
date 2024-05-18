@@ -9,6 +9,7 @@ type CalendarEvent = {
   checked?: boolean;
   type?: string;
   user?: string;
+  msid?: string;
 };
 
 type FullCalendarEvent = {
@@ -36,5 +37,6 @@ type FullCalendarEvent = {
     checked: boolean;
     type: string;
     user?: string;
+    msid?: string;
   };
 };

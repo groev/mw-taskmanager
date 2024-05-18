@@ -8,6 +8,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+
 import { auth, db } from "@/firebase";
 
 async function updateEvent(id: string, data: CalendarEvent) {
@@ -34,7 +35,9 @@ async function fetchEventsFromMicrosoft(day: string, msToken: string | null) {
 
   const url = `https://graph.microsoft.com/v1.0/me/calendarview?startdatetime=${new Date(
     mondayOfThisWeek
-  ).toISOString()}&enddatetime=${new Date(sundayOfThisWeek).toISOString()}`;
+  ).toISOString()}&enddatetime=${new Date(
+    sundayOfThisWeek
+  ).toISOString()}&top=100`;
 
   try {
     const res = await fetch(url, {
@@ -144,15 +147,34 @@ const handleMove = ({ event }: { event: FullCalendarEvent }) => {
 };
 
 function getMondayOfWeek(date: Date) {
-  const day = date.getDay();
-  const diff = date.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-  return new Date(date.setDate(diff));
+  const today = new Date(date);
+  const dayOfWeek = today.getDay();
+  const offsetToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  today.setHours(0, 0, 0, 0);
+
+  const monday = new Date(today.setDate(today.getDate() + offsetToMonday));
+  const timezoneOffsetMinutes = monday.getTimezoneOffset();
+
+  monday.setMinutes(monday.getMinutes() - timezoneOffsetMinutes);
+
+  return monday;
 }
 
-function getSundayOfWeek(date: Date) {
-  const day = date.getDay();
-  const diff = date.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-  return new Date(date.setDate(diff + 6));
+function getSundayOfWeek(today: Date) {
+  const date = new Date(today);
+
+  const dayOfWeek = date.getDay();
+
+  const offsetToSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+
+  const sunday = new Date(date);
+  sunday.setDate(sunday.getDate() + offsetToSunday);
+  sunday.setHours(23, 59, 59, 999);
+  const timezoneOffsetMinutes = sunday.getTimezoneOffset();
+
+  sunday.setMinutes(sunday.getMinutes() - timezoneOffsetMinutes);
+
+  return sunday;
 }
 
 export {

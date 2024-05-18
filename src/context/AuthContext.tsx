@@ -12,7 +12,9 @@ type AuthContextType = {
   user: FirebaseUser | null;
   signout: () => void;
   setMsToken: (token: string) => void;
+
   msToken: string | null;
+  msId: string | null;
 };
 
 export const AuthContext = createContext({
@@ -20,6 +22,7 @@ export const AuthContext = createContext({
   signout: () => {},
   setMsToken: () => {},
   msToken: null,
+  msId: null,
 } as AuthContextType);
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -33,6 +36,7 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [msToken, setMsToken] = useState<string | null>(null);
+  const [msId, setMsId] = useState<string | null>(null);
 
   async function getNewMSToken(user: FirebaseUser) {
     reauthenticateWithPopup(user, new OAuthProvider("microsoft.com"))
@@ -78,6 +82,8 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
             if (res.status === 401) {
               return await getNewMSToken(user);
             } else {
+              const data = await res.json();
+              setMsId(data.id);
               return true;
             }
           } catch (error) {
@@ -109,6 +115,7 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
         signout: signout,
         setMsToken: setMsToken,
         msToken: msToken,
+        msId: msId,
       }}
     >
       {loading ? (

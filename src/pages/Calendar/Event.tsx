@@ -29,6 +29,13 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
         text: "white",
       };
 
+    if (data.extendedProps?.msid) {
+      return {
+        background: `var(--mantine-color-grape-3)`,
+        text: "var(--mantine-color-dark-8)",
+      };
+    }
+
     if (isMs)
       return {
         background: `var(--mantine-color-pink-3)`,
