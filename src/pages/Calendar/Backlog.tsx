@@ -18,7 +18,7 @@ export default function Backlog() {
   const { data } = useQuery({
     queryKey: ["msTasks"],
     enabled: !!msToken,
-    queryFn: async () => await fetchTasks(msToken, msId),
+    queryFn: async () => await fetchTasks(msToken),
   });
   const events = useCalendarStore((state) => state.events);
 

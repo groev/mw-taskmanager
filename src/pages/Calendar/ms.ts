@@ -1,8 +1,8 @@
 import buildQuery from "odata-query";
 import * as MicrosoftGraph from "@microsoft/microsoft-graph-types";
 
-async function fetchTasks(msToken: string | null, msId: string | null) {
-  if (!msToken || !msId) return [];
+async function fetchTasks(msToken: string | null) {
+  if (!msToken) return [];
 
   const query = buildQuery({
     filter: {
