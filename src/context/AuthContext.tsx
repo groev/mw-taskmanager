@@ -63,20 +63,23 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
-        if (msToken) await checkIfMicrosoftTokenIsValid(user, msToken);
+        if (checkIfMicrosofUser(user)) await checkIfMicrosoftTokenIsValid(user);
       } else {
         setUser(null);
       }
       setLoading(false);
-      async function checkIfMicrosoftTokenIsValid(
-        user: FirebaseUser,
-        token: string
-      ) {
+      function checkIfMicrosofUser(user: FirebaseUser) {
+        if (user.providerData[0].providerId === "microsoft.com") {
+          return true;
+        }
+        return false;
+      }
+      async function checkIfMicrosoftTokenIsValid(user: FirebaseUser) {
         if (user.providerData[0].providerId === "microsoft.com") {
           try {
             const res = await fetch("https://graph.microsoft.com/v1.0/me", {
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${msToken}`,
               },
             });
             if (res.status === 401) {

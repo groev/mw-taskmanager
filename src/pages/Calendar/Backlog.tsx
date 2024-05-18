@@ -1,4 +1,4 @@
-import { Card, Stack, Text, Group, ActionIcon } from "@mantine/core";
+import { Card, Stack, Text, Group, ActionIcon, Loader } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import { PlannerTask } from "@microsoft/microsoft-graph-types";
 
@@ -15,7 +15,7 @@ import { useCalendarStore } from "./store";
 export default function Backlog() {
   const { msToken } = useAuthContext();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["msTasks"],
     enabled: !!msToken,
     queryFn: async () => await fetchTasks(msToken),
@@ -24,6 +24,7 @@ export default function Backlog() {
 
   return (
     <Stack p="xs" gap={2}>
+      {isLoading && <Loader />}
       {data
         ?.filter((task) => !events.find((event) => event.msid === task.id))
         .map((task) => (
