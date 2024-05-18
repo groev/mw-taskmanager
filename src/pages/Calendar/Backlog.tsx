@@ -13,7 +13,7 @@ import { fetchTasks } from "./ms";
 import { useCalendarStore } from "./store";
 
 export default function Backlog() {
-  const { msToken, msId } = useAuthContext();
+  const { msToken } = useAuthContext();
 
   const { data } = useQuery({
     queryKey: ["msTasks"],
