@@ -6,6 +6,9 @@ async function fetchTasks(msToken: string | null) {
 
   const query = buildQuery({
     filter: {
+      completedDateTime: {
+        ne: null,
+      },
       percentComplete: {
         ne: 100,
       },
@@ -24,7 +27,7 @@ async function fetchTasks(msToken: string | null) {
 
     const data = await res.json();
     const tasks = data.value as MicrosoftGraph.PlannerTask[];
-
+    console.log(tasks);
     return tasks.filter(
       (task) => !task.percentComplete || task.percentComplete < 100
     );

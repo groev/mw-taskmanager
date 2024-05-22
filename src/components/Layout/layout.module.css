@@ -1,12 +1,8 @@
 .navbar {
   background-color: var(--mantine-color-body);
-  height: rem(840px);
-  width: rem(300px);
-  padding: var(--mantine-spacing-md);
+  margin-left: 2rem;
   display: flex;
-  flex-direction: column;
-  border-right: rem(1px) solid
-    light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  flex-direction: row;
 }
 
 .navbarMain {
@@ -25,8 +21,9 @@
   text-decoration: none;
   font-size: var(--mantine-font-size-sm);
   color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
-  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
-  border-radius: var(--mantine-radius-sm);
+  padding: 4px 16px;
+  border-radius: 3px;
+  margin: 0 1rem;
   font-weight: 500;
 
   &:hover {

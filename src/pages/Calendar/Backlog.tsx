@@ -1,9 +1,18 @@
-import { Card, Stack, Text, Group, ActionIcon, Loader } from "@mantine/core";
+import { useMemo, useState } from "react";
+import {
+  Card,
+  Stack,
+  Text,
+  Group,
+  ActionIcon,
+  Loader,
+  TextInput,
+} from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
+
 import { PlannerTask } from "@microsoft/microsoft-graph-types";
 
-import { IconChevronRight } from "@tabler/icons-react";
-
+import { IconChevronRight, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { useAuthContext } from "@/context/AuthContext";
@@ -14,23 +23,41 @@ import { useCalendarStore } from "./store";
 
 export default function Backlog() {
   const { msToken } = useAuthContext();
+  const [searchValue, setSearchValue] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["msTasks"],
+    queryKey: ["msTasks", msToken],
     enabled: !!msToken,
     queryFn: async () => await fetchTasks(msToken),
   });
   const events = useCalendarStore((state) => state.events);
 
+  const tasks = useMemo(() => {
+    if (!data) return [];
+    return data?.filter((task: PlannerTask) => {
+      if (searchValue === "") return true;
+      return task?.title?.toLowerCase().includes(searchValue.toLowerCase());
+    });
+  }, [data, searchValue]);
+
   return (
     <Stack p="xs" gap={2}>
+      <TextInput
+        size="xs"
+        mb="md"
+        variant="default"
+        leftSection={<IconSearch size="1rem" />}
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+        placeholder="Search"
+      />
       {isLoading && <Loader />}
-      {data
+      {tasks
         ?.filter((task) => !events.find((event) => event.msid === task.id))
         .map((task) => (
           <TaskItem key={task.id} item={task} />
         ))}
-      {data
+      {tasks
         ?.filter((task) => events.find((event) => event.msid === task.id))
         .map((task) => (
           <TaskItem key={task.id} item={task} disabled />
