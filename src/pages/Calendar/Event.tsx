@@ -1,6 +1,22 @@
 import ClickAwayListener from "react-click-away-listener";
-import { ActionIcon, Card, Checkbox, Flex, Group, Text } from "@mantine/core";
-import { IconTrash } from "@tabler/icons-react";
+import {
+  ActionIcon,
+  Card,
+  Checkbox,
+  TextInput,
+  Textarea,
+  Button,
+  Flex,
+  Group,
+  Text,
+  Modal,
+  Stack,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
+
+import { useDisclosure } from "@mantine/hooks";
+
+import { IconEdit, IconTrash } from "@tabler/icons-react";
 
 import { useMutation } from "@tanstack/react-query";
 
@@ -8,6 +24,7 @@ import { deleteEvent, updateEvent } from "./helpers";
 import { useCalendarStore } from "./store";
 
 export default function Event({ data }: { data: FullCalendarEvent }) {
+  const [opened, { open, close }] = useDisclosure();
   const setSelectedEvent = useCalendarStore((state) => state.setSelectedEvent);
   const selectedEvent = useCalendarStore((state) => state.selectedEvent);
   const isMs = data.extendedProps.type === "ms";
@@ -55,19 +72,34 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
     },
   });
 
+  const editText = useMutation({
+    mutationFn: ({ text, title }: { text: string; title: string }) => {
+      const event = { text: text, title: title };
+
+      return updateEvent(data.id, event);
+    },
+  });
+
   const deselect = () => {
     if (selectedEvent?.id == data.id) setSelectedEvent(null);
   };
 
   const select = () => {
     if (selectedEvent?.id == data.id) {
-      setSelectedEvent(null);
+      return;
     } else {
       setSelectedEvent(data);
     }
   };
 
   const color = getColor(data);
+
+  const form = useForm({
+    initialValues: {
+      text: data.extendedProps?.text || "",
+      title: data.title || "",
+    },
+  });
 
   return (
     <ClickAwayListener onClickAway={deselect}>
@@ -79,11 +111,48 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
         onClick={() => select()}
       >
         {selectedEvent?.id == data.id && (
-          <Group pos="absolute" top="0" left="-2rem" style={{ zIndex: 9999 }}>
+          <Stack
+            gap={2}
+            pos="absolute"
+            top="0"
+            left="-2rem"
+            style={{ zIndex: 999999 }}
+          >
             <ActionIcon onClick={() => deleteEvent(selectedEvent.id)}>
               <IconTrash />
             </ActionIcon>
-          </Group>
+            <ActionIcon>
+              <IconEdit onClick={open} />
+            </ActionIcon>
+            <Modal title="Edit edvent" centered opened={opened} onClose={close}>
+              <form
+                onSubmit={form.onSubmit((values) =>
+                  editText.mutate(values, {
+                    onSuccess: () => {
+                      close();
+                    },
+                  })
+                )}
+              >
+                <Stack>
+                  <TextInput label="Title" {...form.getInputProps("title")} />
+                  <Textarea label="Info" {...form.getInputProps("text")} />
+                </Stack>
+                <Group justify="flex-end" mt="xl">
+                  <Button variant="subtle" onClick={close}>
+                    Cancel
+                  </Button>
+                  <Button
+                    loading={editText.isPending}
+                    type="submit"
+                    variant="primary"
+                  >
+                    Save
+                  </Button>
+                </Group>
+              </form>
+            </Modal>
+          </Stack>
         )}
         <Card bg={color.background} p={8} w={"100%"} h={"100%"}>
           <Group pos="relative" gap={2} justify="space-between" align="center">

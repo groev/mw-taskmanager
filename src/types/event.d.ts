@@ -2,6 +2,7 @@ type CalendarEvent = {
   id?: string;
   title?: string;
   day?: string;
+  text?: string;
   startSlot?: number;
   endSlot?: number;
   startEditable?: boolean;
@@ -26,9 +27,11 @@ type FullCalendarEvent = {
   checked: boolean;
   type: string;
   user?: string;
+  text?: string;
   extendedProps: {
     id: string;
-    title: string;
+    text?: string;
+    title?: string;
     day: string;
     startSlot: number;
     endSlot: number;
