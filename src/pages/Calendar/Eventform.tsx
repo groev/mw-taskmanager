@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Group, TextInput, Button, ActionIcon } from "@mantine/core";
+import { Group, TextInput, Button, ActionIcon, Box, Text } from "@mantine/core";
 
 import { useViewportSize } from "@mantine/hooks";
 
@@ -79,65 +79,94 @@ export default function Eventform() {
     }
   }
 
+  const thisMonth = new Date(day).getMonth();
+  const thisYear = new Date(day).getFullYear();
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
   return (
-    <form
-      onSubmit={(values: unknown) => addEvent(values as CalendarEvent)}
-      className="form"
-    >
-      <Group
-        pos={width > 768 ? "absolute" : "fixed"}
-        bottom={0}
-        py={0}
-        align="center"
-        h={50}
-        left="0"
-        right="0"
-        px={"md"}
-        style={{
-          paddingBottom: `env(safe-area-inset-bottom)`,
-
-          borderTop: "1px solid var(--mantine-color-dark-5)",
-          zIndex: 999999,
-        }}
-        bg={"var(--mantine-color-body)"}
+    <Box>
+      <form
+        onSubmit={(values: unknown) => addEvent(values as CalendarEvent)}
+        className="form"
       >
-        <Group gap={0} justify="space-between" w="100%">
-          <ActionIcon
-            variant="transparent"
-            onClick={() => changeDay(-1, isMobile)}
-          >
-            <IconArrowLeft />
-          </ActionIcon>
-          <Group maw={"400px"} flex={1} justify="stretch" gap={4}>
-            <TextInput
-              placeholder="Add activity"
-              flex={1}
-              id="input"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+        <Group
+          bottom={0}
+          py={0}
+          align="center"
+          left="0"
+          right="0"
+          px={"md"}
+          style={{
+            paddingBottom: `env(safe-area-inset-bottom)`,
 
-            <Button
-              visibleFrom="sm"
-              leftSection={<IconPlus size={"1rem"} />}
-              disabled={title.length === 0}
-              type="submit"
-              onClick={() => addNewEvent()}
-            >
-              Add
-            </Button>
-            <ActionIcon hiddenFrom="sm" size="lg" onClick={() => addNewEvent()}>
-              <IconPlus size={"1rem"} />
-            </ActionIcon>
+            borderBottom: "1px solid var(--mantine-color-dark-5)",
+            zIndex: 999999,
+          }}
+          bg={"var(--mantine-color-body)"}
+        >
+          <Group gap={0} justify="space-between" w="100%">
+            <Text size="2rem" py="lg">
+              {monthNames[thisMonth]} {thisYear}
+            </Text>
+            <Group maw={"400px"} flex={1} justify="stretch" gap={4}>
+              <TextInput
+                placeholder="Add activity"
+                flex={1}
+                id="input"
+                size="xs"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+
+              <Button
+                size="xs"
+                visibleFrom="sm"
+                leftSection={<IconPlus size={"1rem"} />}
+                disabled={title.length === 0}
+                type="submit"
+                onClick={() => addNewEvent()}
+              >
+                Add
+              </Button>
+              <ActionIcon
+                size="xs"
+                hiddenFrom="sm"
+                onClick={() => addNewEvent()}
+              >
+                <IconPlus size={"1rem"} />
+              </ActionIcon>
+            </Group>
+            <Group>
+              <ActionIcon
+                variant="transparent"
+                onClick={() => changeDay(-1, isMobile)}
+              >
+                <IconArrowLeft />
+              </ActionIcon>
+              <ActionIcon
+                variant="transparent"
+                onClick={() => changeDay(1, isMobile)}
+              >
+                <IconArrowRight />
+              </ActionIcon>
+            </Group>
           </Group>
-          <ActionIcon
-            variant="transparent"
-            onClick={() => changeDay(1, isMobile)}
-          >
-            <IconArrowRight />
-          </ActionIcon>
         </Group>
-      </Group>
-    </form>
+      </form>
+    </Box>
   );
 }

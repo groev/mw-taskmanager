@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
+import { Stack } from "@mantine/core";
+
 import { IconCalendar, IconListCheck, IconFileText } from "@tabler/icons-react";
 
 import classes from "./layout.module.css";
 
 // get active menu item
 
-export default function Nav({ onClose }: { onClose: () => void }) {
+export default function Nav() {
   const linkItems = [
     { href: "/", label: "Calendar", icon: IconCalendar },
     { href: "/documents", label: "Documents", icon: IconListCheck },
@@ -14,7 +16,6 @@ export default function Nav({ onClose }: { onClose: () => void }) {
 
   const links = linkItems.map((item) => (
     <NavLink
-      onClick={() => onClose()}
       className={({ isActive }) => {
         return isActive ? `${classes.active} ${classes.link}` : classes.link;
       }}
@@ -22,8 +23,11 @@ export default function Nav({ onClose }: { onClose: () => void }) {
       key={item.label}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
-      <span>{item.label}</span>
     </NavLink>
   ));
-  return <nav className={classes.navbar}>{links}</nav>;
+  return (
+    <Stack mt="xl" className={classes.navbar}>
+      {links}
+    </Stack>
+  );
 }

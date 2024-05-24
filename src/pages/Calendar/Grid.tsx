@@ -1,7 +1,6 @@
 import { useRef, useEffect } from "react";
 import { QuerySnapshot, onSnapshot } from "firebase/firestore";
 import { EventInput } from "@fullcalendar/core/index.js";
-import deLocale from "@fullcalendar/core/locales/de";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -9,9 +8,7 @@ import { useViewportSize } from "@mantine/hooks";
 
 import { useQuery } from "@tanstack/react-query";
 
-
 import { useAuthContext } from "@/context/AuthContext";
-
 
 import Event from "./Event";
 import {
@@ -21,7 +18,6 @@ import {
   getQuery,
 } from "./helpers";
 import { useCalendarStore } from "./store";
-
 
 export default function Daygrid() {
   const day = useCalendarStore((state) => state.day);
@@ -100,11 +96,11 @@ export default function Daygrid() {
       ref={calRef}
       select={(info) => setSelectedSlot(info)}
       unselect={() => setSelectedSlot(null)}
-      locale={deLocale}
       unselectAuto={false}
       unselectCancel={".form"}
       headerToolbar={{ center: "", left: "", right: "" }}
       plugins={[timeGridPlugin, interactionPlugin]}
+      firstDay={1}
       slotLabelFormat={{
         hour: "numeric",
         omitZeroMinute: true,

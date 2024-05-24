@@ -21,10 +21,11 @@ export default function Calendar() {
         <Backlog />
       </Box>
       <div style={{ position: "relative", flex: 1 }}>
+        <EventForm />
+
         <Grid />
       </div>
       <Keybindings />
-      <EventForm />
     </Box>
   );
 }
