@@ -119,7 +119,7 @@ export default function Eventform() {
           bg={"var(--mantine-color-body)"}
         >
           <Group gap={0} justify="space-between" w="100%">
-            <Text size="2rem" py="lg">
+            <Text visibleFrom="xs" size="2rem" py="lg">
               {monthNames[thisMonth]} {thisYear}
             </Text>
             <Group maw={"400px"} flex={1} justify="stretch" gap={4}>
@@ -127,6 +127,7 @@ export default function Eventform() {
                 placeholder="Add activity"
                 flex={1}
                 id="input"
+                my="xs"
                 size="xs"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -144,6 +145,7 @@ export default function Eventform() {
               </Button>
               <ActionIcon
                 size="xs"
+                mx="xs"
                 hiddenFrom="sm"
                 onClick={() => addNewEvent()}
               >

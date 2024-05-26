@@ -111,6 +111,7 @@ const TaskItem = ({
       endSlot: lastEvent.endSlot + 4,
       checked: false,
       msid: item.id,
+      text: item.details?.description,
     };
     if (event.endSlot > 68) {
       const date = new Date(lastEvent.day as string);

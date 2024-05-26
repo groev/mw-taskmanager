@@ -16,7 +16,12 @@ export default function Layout() {
   const { signout } = useAuthContext();
 
   return (
-    <AppShell navbar={{ width: 80, breakpoint: 0 }}>
+    <AppShell
+      navbar={{
+        width: 80,
+        breakpoint: 20,
+      }}
+    >
       <AppShell.Navbar>
         <Stack className={classes.navbar}>
           <Stack pt="lg">

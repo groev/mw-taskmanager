@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useEventListener } from "@mantine/hooks";
 
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 
@@ -101,9 +101,12 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
     },
   });
 
+  const ref = useEventListener("dblclick", open);
+
   return (
     <ClickAwayListener onClickAway={deselect}>
       <Flex
+        ref={ref}
         style={{
           pointerEvents: isMs ? "none" : "auto",
         }}
@@ -136,7 +139,11 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
               >
                 <Stack>
                   <TextInput label="Title" {...form.getInputProps("title")} />
-                  <Textarea label="Info" {...form.getInputProps("text")} />
+                  <Textarea
+                    autosize
+                    label="Info"
+                    {...form.getInputProps("text")}
+                  />
                 </Stack>
                 <Group justify="flex-end" mt="xl">
                   <Button variant="subtle" onClick={close}>
