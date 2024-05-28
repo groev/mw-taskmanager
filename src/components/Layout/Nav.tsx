@@ -10,8 +10,8 @@ import classes from "./layout.module.css";
 export default function Nav() {
   const linkItems = [
     { href: "/", label: "Calendar", icon: IconCalendar },
-    { href: "/documents", label: "Documents", icon: IconListCheck },
-    { href: "/lists", label: "Lists", icon: IconFileText },
+    { href: "/documents", label: "Documents", icon: IconFileText },
+    { href: "/lists", label: "Lists", icon: IconListCheck },
   ];
 
   const links = linkItems.map((item) => (

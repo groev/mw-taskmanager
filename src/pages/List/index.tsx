@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Fragment } from "react";
 import {
   addDoc,
   collection,
@@ -17,6 +17,22 @@ import {
 } from "formik";
 import ClickAwayListener from "react-click-away-listener";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  DragEndEvent,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   Button,
   Card,
@@ -64,10 +80,16 @@ export default function Page() {
       const docRef = doc(db, "lists", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
+        const items = docSnap.data()?.items || [];
         const fetchedList = {
           id: docSnap.id,
           ...docSnap.data(),
+          items: items.map((item: ListItem) => ({
+            ...item,
+            id: item.id || Math.random().toString(36).substring(2),
+          })),
         };
+
         return fetchedList as List;
       } else {
         return navigate("/lists");
@@ -126,6 +148,13 @@ export default function Page() {
     }));
     setInitialValues({ ...values, items: clearedItems });
   };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   return (
     <Container mt="xl" size="sm">
@@ -220,51 +249,81 @@ export default function Page() {
               />
               <FieldArray
                 name="items"
-                render={(arrayHelpers) => (
-                  <div>
-                    {values.items?.map((_, index) => (
-                      <ListItem
-                        values={values}
-                        key={index}
-                        arrayHelpers={arrayHelpers}
-                        index={index}
-                      />
-                    ))}
-                    <Group my="xl">
-                      <TextInput
-                        value={newItem}
-                        flex={1}
-                        onChange={(e) => setNewItem(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
+                render={(arrayHelpers) => {
+                  const handleDragEnd = (event: DragEndEvent) => {
+                    const { active, over } = event;
+                    if (active.id !== over?.id) {
+                      const oldIndex = values.items.findIndex(
+                        (item) => item.id === active.id
+                      );
+                      const newIndex = values.items.findIndex(
+                        (item) => item.id === over?.id
+                      );
+                      return arrayHelpers.move(oldIndex, newIndex);
+                    }
+                  };
+                  return (
+                    <div>
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                      >
+                        <SortableContext
+                          items={values.items?.map((item) => item.id) || []}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {values.items?.map((item, index) => (
+                            <Fragment key={item.id}>
+                              <ListItem
+                                values={values}
+                                key={item.id}
+                                arrayHelpers={arrayHelpers}
+                                index={index}
+                              />
+                            </Fragment>
+                          ))}
+                        </SortableContext>
+                      </DndContext>
+                      <Group my="xl">
+                        <TextInput
+                          value={newItem}
+                          flex={1}
+                          onChange={(e) => setNewItem(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              if (newItem === "") return;
+                              arrayHelpers.push({
+                                id: Math.random().toString(36).substring(2),
+                                title: newItem,
+                                checked: false,
+                              });
+                              return setNewItem("");
+                            }
+                          }}
+                        ></TextInput>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          leftSection={<IconPlus />}
+                          onClick={() => {
                             if (newItem === "") return;
                             arrayHelpers.push({
+                              id: Math.random().toString(36).substring(2),
+
                               title: newItem,
                               checked: false,
                             });
                             return setNewItem("");
-                          }
-                        }}
-                      ></TextInput>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        leftSection={<IconPlus />}
-                        onClick={() => {
-                          if (newItem === "") return;
-                          arrayHelpers.push({
-                            title: newItem,
-                            checked: false,
-                          });
-                          return setNewItem("");
-                        }}
-                      >
-                        Add item
-                      </Button>
-                    </Group>
-                  </div>
-                )}
+                          }}
+                        >
+                          Add item
+                        </Button>
+                      </Group>
+                    </div>
+                  );
+                }}
               />
             </Form>
           );
@@ -283,6 +342,13 @@ type ListItemProps = {
 const ListItem = ({ arrayHelpers, index, values }: ListItemProps) => {
   const [isEditAble, setIsEditAble] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: values.items[index].id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   useEffect(() => {
     if (isEditAble && ref.current) {
@@ -291,9 +357,18 @@ const ListItem = ({ arrayHelpers, index, values }: ListItemProps) => {
       ref.current?.blur();
     }
   }, [ref, isEditAble]);
+
   return (
     <ClickAwayListener onClickAway={() => setIsEditAble(false)}>
-      <Card withBorder p="xs" mt="xs" key={index}>
+      <Card
+        ref={setNodeRef}
+        withBorder
+        p="xs"
+        mt="xs"
+        style={style}
+        {...attributes}
+        {...listeners}
+      >
         <Group>
           <Field type="checkbox" name={`items.${index}.checked`}>
             {({ field }: FieldProps) => (
