@@ -49,6 +49,7 @@ async function fetchEventsFromMicrosoft(day: string, msToken: string | null) {
 
     const data = await res.json();
     const msEvents = data.value;
+
     const events = [];
     for (const event of msEvents) {
       const start = new Date(event.start.dateTime);
@@ -73,7 +74,8 @@ async function fetchEventsFromMicrosoft(day: string, msToken: string | null) {
         durationEditable: false,
         checked: false,
         type: "ms",
-      });
+        joinUrl: event?.onlineMeeting?.joinUrl,
+      } as CalendarEvent);
     }
     return events;
   } catch (err) {

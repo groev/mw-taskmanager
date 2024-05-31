@@ -86,6 +86,7 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
   };
 
   const select = () => {
+    if (isMs) return;
     if (selectedEvent?.id == data.id) {
       return;
     } else {
@@ -102,18 +103,21 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
     },
   });
 
-  const ref = useEventListener("dblclick", open);
+  console.log(data.extendedProps);
+
+  const ref = useEventListener("dblclick", () => {
+    if (data.extendedProps?.joinUrl) {
+      console.log(data.extendedProps);
+      window.open(data.extendedProps?.joinUrl, "_blank");
+    }
+    if (!isMs) {
+      open();
+    }
+  });
 
   return (
     <ClickAwayListener onClickAway={deselect}>
-      <Flex
-        ref={ref}
-        style={{
-          pointerEvents: isMs ? "none" : "auto",
-        }}
-        h={"100%"}
-        onClick={() => select()}
-      >
+      <Flex ref={ref} h={"100%"} onClick={() => select()}>
         {selectedEvent?.id == data.id && (
           <Stack
             gap={2}

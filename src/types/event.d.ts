@@ -41,5 +41,6 @@ type FullCalendarEvent = {
     type: string;
     user?: string;
     msid?: string;
+    joinUrl?: string;
   };
 };
