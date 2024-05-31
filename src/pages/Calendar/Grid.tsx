@@ -82,8 +82,10 @@ export default function Daygrid() {
       allDaySlot={false}
       slotMinTime={"06:00:00"}
       slotMaxTime={"23:00:00"}
-      height="calc(100vh - 100px)"
+      expandRows={true}
+      height="1500px"
       contentHeight={15000}
+      aspectRatio={5}
       editable={true}
       initialDate={day}
       eventDrop={async (arg: unknown) =>

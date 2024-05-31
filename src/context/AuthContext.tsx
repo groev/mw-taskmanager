@@ -74,6 +74,7 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
         }
         return false;
       }
+
       async function checkIfMicrosoftTokenIsValid(user: FirebaseUser) {
         if (user.providerData[0].providerId === "microsoft.com") {
           try {
