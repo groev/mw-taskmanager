@@ -7,6 +7,7 @@ import {
   Textarea,
   Button,
   Flex,
+  Box,
   Group,
   Text,
   Modal,
@@ -162,17 +163,27 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
           </Stack>
         )}
         <Card bg={color.background} p={8} w={"100%"} h={"100%"}>
-          <Group pos="relative" gap={2} justify="space-between" align="center">
-            <Text fz={12} c={color.text} fw={500}>
-              {data.title}
-            </Text>
+          <Group
+            pos="relative"
+            gap={"xs"}
+            justify="flex-start"
+            align="top"
+            style={{ flexWrap: "nowrap" }}
+          >
             {!isMs && (
-              <Checkbox
-                checked={data.extendedProps.checked}
-                onChange={(e) => mutation.mutate(e.target.checked)}
-                size="xs"
-              />
+              <Box flex={0}>
+                <Checkbox
+                  checked={data.extendedProps.checked}
+                  onChange={(e) => mutation.mutate(e.target.checked)}
+                  size="xs"
+                />
+              </Box>
             )}
+            <Box flex={"auto"}>
+              <Text inline fz={12} flex={"auto"} c={color.text} fw={500}>
+                {data.title}
+              </Text>
+            </Box>
           </Group>
         </Card>
       </Flex>
