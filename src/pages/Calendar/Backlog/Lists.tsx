@@ -25,7 +25,6 @@ export default function Lists() {
           component={Link}
           to="/backlog/planner"
           variant="light"
-          p="sm"
           justify="space-between"
           rightSection={<IconChevronRight size="1rem" />}
         >
@@ -39,12 +38,11 @@ export default function Lists() {
           component={Link}
           to={`/backlog/${list.id}`}
           variant="light"
-          p="sm"
           justify="space-between"
           key={list.id}
           rightSection={<IconChevronRight size="1rem" />}
         >
-          {list.title}
+          {list.title} ({list?.items?.filter((item) => !item.checked).length})
         </Button>
       ))}
     </Stack>
