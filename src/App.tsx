@@ -17,6 +17,9 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Calendar />} />
+            <Route path="/backlog" element={<Calendar />} />
+            <Route path="/backlog/:id" element={<Calendar />} />
+
             <Route path="/documents" element={<Documents />} />
             <Route path="/documents/:id" element={<Document />} />
             <Route path="/lists" element={<Lists />} />

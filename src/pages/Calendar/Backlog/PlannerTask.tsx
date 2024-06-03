@@ -1,70 +1,11 @@
-import { useMemo, useState } from "react";
-import {
-  Card,
-  Stack,
-  Text,
-  Group,
-  ActionIcon,
-  Loader,
-  TextInput,
-} from "@mantine/core";
+import { Card, Group, Text, ActionIcon } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
-
 import { PlannerTask } from "@microsoft/microsoft-graph-types";
 
-import { IconChevronRight, IconSearch } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { IconChevronRight } from "@tabler/icons-react";
 
-import { useAuthContext } from "@/context/AuthContext";
-
-import { addEvent } from "./helpers";
-import { fetchTasks } from "./ms";
-import { useCalendarStore } from "./store";
-
-export default function Backlog() {
-  const { msToken } = useAuthContext();
-  const [searchValue, setSearchValue] = useState("");
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["msTasks", msToken],
-    enabled: !!msToken,
-    queryFn: async () => await fetchTasks(msToken),
-  });
-  const events = useCalendarStore((state) => state.events);
-
-  const tasks = useMemo(() => {
-    if (!data) return [];
-    return data?.filter((task: PlannerTask) => {
-      if (searchValue === "") return true;
-      return task?.title?.toLowerCase().includes(searchValue.toLowerCase());
-    });
-  }, [data, searchValue]);
-
-  return (
-    <Stack p="xs" gap={2}>
-      <TextInput
-        size="xs"
-        mb="md"
-        variant="default"
-        leftSection={<IconSearch size="1rem" />}
-        value={searchValue}
-        onChange={(e) => setSearchValue(e.target.value)}
-        placeholder="Search"
-      />
-      {isLoading && <Loader />}
-      {tasks
-        ?.filter((task) => !events.find((event) => event.msid === task.id))
-        .map((task) => (
-          <TaskItem key={task.id} item={task} />
-        ))}
-      {tasks
-        ?.filter((task) => events.find((event) => event.msid === task.id))
-        .map((task) => (
-          <TaskItem key={task.id} item={task} disabled />
-        ))}
-    </Stack>
-  );
-}
+import { addEvent } from "../helpers";
+import { useCalendarStore } from "../store";
 
 const TaskItem = ({
   item,
@@ -159,3 +100,5 @@ const TaskItem = ({
     </Card>
   );
 };
+
+export default TaskItem;

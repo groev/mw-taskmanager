@@ -1,6 +1,6 @@
 import { Box } from "@mantine/core";
 
-import Backlog from "./Backlog";
+import Backlog from "./Backlog/index";
 import EventForm from "./Eventform";
 import Grid from "./Grid";
 

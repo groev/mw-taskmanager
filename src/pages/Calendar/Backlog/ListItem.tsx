@@ -1,76 +1,16 @@
-import { useMemo, useState } from "react";
-import {
-  Card,
-  Stack,
-  Text,
-  Group,
-  ActionIcon,
-  Loader,
-  TextInput,
-} from "@mantine/core";
+import { Card, Group, Text, ActionIcon } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 
-import { PlannerTask } from "@microsoft/microsoft-graph-types";
+import { IconChevronRight } from "@tabler/icons-react";
 
-import { IconChevronRight, IconSearch } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { addEvent } from "../helpers";
+import { useCalendarStore } from "../store";
 
-import { useAuthContext } from "@/context/AuthContext";
-
-import { addEvent } from "./helpers";
-import { fetchTasks } from "./ms";
-import { useCalendarStore } from "./store";
-
-export default function Backlog() {
-  const { msToken } = useAuthContext();
-  const [searchValue, setSearchValue] = useState("");
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["msTasks", msToken],
-    enabled: !!msToken,
-    queryFn: async () => await fetchTasks(msToken),
-  });
-  const events = useCalendarStore((state) => state.events);
-
-  const tasks = useMemo(() => {
-    if (!data) return [];
-    return data?.filter((task: PlannerTask) => {
-      if (searchValue === "") return true;
-      return task?.title?.toLowerCase().includes(searchValue.toLowerCase());
-    });
-  }, [data, searchValue]);
-
-  return (
-    <Stack p="xs" gap={2}>
-      <TextInput
-        size="xs"
-        mb="md"
-        variant="default"
-        leftSection={<IconSearch size="1rem" />}
-        value={searchValue}
-        onChange={(e) => setSearchValue(e.target.value)}
-        placeholder="Search"
-      />
-      {isLoading && <Loader />}
-      {tasks
-        ?.filter((task) => !events.find((event) => event.msid === task.id))
-        .map((task) => (
-          <TaskItem key={task.id} item={task} />
-        ))}
-      {tasks
-        ?.filter((task) => events.find((event) => event.msid === task.id))
-        .map((task) => (
-          <TaskItem key={task.id} item={task} disabled />
-        ))}
-    </Stack>
-  );
-}
-
-const TaskItem = ({
+const ListItem = ({
   item,
   disabled,
 }: {
-  item: PlannerTask;
+  item: ListItem;
   disabled?: boolean;
 }) => {
   const selectedSlot = useCalendarStore((state) => state.selectedSlot);
@@ -80,7 +20,7 @@ const TaskItem = ({
   const { width } = useViewportSize();
   const isMobile = width < 768; // TODO: use breakpoint
 
-  async function addNewEvent(item: PlannerTask) {
+  async function addNewEvent(item: ListItem) {
     let lastEvent = {
       day: new Date(day).toISOString().split("T")[0],
       endSlot: 4,
@@ -110,8 +50,8 @@ const TaskItem = ({
       startSlot: lastEvent.endSlot,
       endSlot: lastEvent.endSlot + 4,
       checked: false,
-      msid: item.id,
-      text: item.details?.description,
+      msid: item.id || "",
+      text: "",
     };
     if (event.endSlot > 68) {
       const date = new Date(lastEvent.day as string);
@@ -159,3 +99,5 @@ const TaskItem = ({
     </Card>
   );
 };
+
+export default ListItem;
