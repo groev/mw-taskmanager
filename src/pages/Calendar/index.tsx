@@ -1,16 +1,14 @@
-import { Box } from "@mantine/core";
+import "./fullcalendar.overrides.css";
 
 import Backlog from "./Backlog/index";
+import { Box } from "@mantine/core";
 import EventForm from "./Eventform";
 import Grid from "./Grid";
-
 import Keybindings from "./Keybindings";
-
-import "./fullcalendar.overrides.css";
 
 export default function Calendar() {
   return (
-    <Box pos="relative" display="flex" h={"calc(100vh - 50px)"}>
+    <Box pos="relative" display="flex" h={"calc(100vh)"}>
       <Box visibleFrom="xs" w={325}>
         <Backlog />
       </Box>

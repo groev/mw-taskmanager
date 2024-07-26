@@ -1,9 +1,7 @@
-import { Link } from "react-router-dom";
-
-import { Stack, Button, Loader, Group, Text } from "@mantine/core";
-
+import { Button, Group, Loader, Stack, Text } from "@mantine/core";
 import { IconBrandTeams, IconChevronRight } from "@tabler/icons-react";
 
+import { Link } from "react-router-dom";
 import { useAuthContext } from "@/context/AuthContext";
 import useLists from "@/pages/List/hooks/useLists";
 

@@ -1,10 +1,8 @@
-import { useParams } from "react-router-dom";
-
 import { Box } from "@mantine/core";
-
 import List from "./List";
 import Lists from "./Lists";
 import Planner from "./Planner";
+import { useParams } from "react-router-dom";
 
 export default function Backlog() {
   const { id } = useParams();
