@@ -1,4 +1,6 @@
-import { ActionIcon, Box, Group, Loader, Text } from "@mantine/core";
+import { Fragment, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   DndContext,
   DragEndEvent,
@@ -7,45 +9,32 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { FormProvider, useForm } from "./formContext";
-import { Fragment, useEffect, useState } from "react";
-import { IconChevronLeft, IconPlus } from "@tabler/icons-react";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { ActionIcon, Box, Group, Loader, Text } from "@mantine/core";
 
-import { Link } from "react-router-dom";
-import ListItem from "./Listitem";
 import { TextInput } from "@mantine/core";
-import { auth } from "@/firebase";
-import useCreateList from "./hooks/useCreateList";
 import { useDebouncedCallback } from "@mantine/hooks";
-import useDeleteList from "./hooks/useDeleteList";
+import { IconChevronLeft, IconPlus } from "@tabler/icons-react";
+
+import { auth } from "@/firebase";
+
+import { FormProvider, useForm } from "./formContext";
+import useCreateList from "./hooks/useCreateList";
 import useList from "./hooks/useList";
-import { useParams } from "react-router-dom";
 import useUpdateList from "./hooks/useUpdateList";
+import ListItem from "./Listitem";
 
 export default function Page() {
   const [newItem, setNewItem] = useState("");
   const { id = "" } = useParams();
-  const isNew = id === "create";
 
   const { data, isLoading } = useList(id);
 
   const saveList = useUpdateList(id);
   const createList = useCreateList();
-
-  const deleteList = useDeleteList(id);
-
-  const clearList = () => {
-    // set all items to unchecked
-    const clearedItems = form.getValues().items.map((item) => ({
-      ...item,
-      checked: false,
-    }));
-    form.setFieldValue("items", clearedItems);
-  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
