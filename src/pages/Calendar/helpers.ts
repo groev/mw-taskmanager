@@ -8,9 +8,11 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+
 import { auth, db } from "@/firebase";
 
 async function updateEvent(id: string, data: CalendarEvent) {
+  console.log(data);
   return await updateDoc(doc(db, "events", id), data);
 }
 
@@ -72,6 +74,7 @@ async function fetchEventsFromMicrosoft(day: string, msToken: string | null) {
         durationEditable: false,
         checked: false,
         type: "ms",
+        subtasks: [],
         joinUrl: event?.onlineMeeting?.joinUrl,
       } as CalendarEvent);
     }

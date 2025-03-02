@@ -1,4 +1,5 @@
 import ClickAwayListener from "react-click-away-listener";
+import { Calendar } from "@fullcalendar/core/index.js";
 import {
   ActionIcon,
   Card,
@@ -12,7 +13,10 @@ import {
   Text,
   Modal,
   Stack,
+  Divider,
+  SimpleGrid,
 } from "@mantine/core";
+
 import { useForm } from "@mantine/form";
 
 import { useDisclosure, useEventListener } from "@mantine/hooks";
@@ -23,6 +27,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { deleteEvent, updateEvent } from "./helpers";
 import { useCalendarStore } from "./store";
+import Subtasks from "./Subtasks";
 
 export default function Event({ data }: { data: FullCalendarEvent }) {
   const [opened, { open, close }] = useDisclosure();
@@ -74,8 +79,20 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
   });
 
   const editText = useMutation({
-    mutationFn: ({ text, title }: { text: string; title: string }) => {
-      const event = { text: text, title: title };
+    mutationFn: ({
+      text,
+      title,
+      subtasks,
+    }: {
+      text: string;
+      title: string;
+      subtasks: {
+        id: string;
+        text: string;
+        checked: boolean;
+      }[];
+    }) => {
+      const event = { text: text, title: title, subtasks: subtasks };
 
       return updateEvent(data.id, event);
     },
@@ -96,14 +113,13 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
 
   const color = getColor(data);
 
-  const form = useForm({
+  const form = useForm<Partial<CalendarEvent>>({
     initialValues: {
       text: data.extendedProps?.text || "",
       title: data.title || "",
+      subtasks: data.extendedProps?.subtasks || [],
     },
   });
-
-  console.log(data.extendedProps);
 
   const ref = useEventListener("dblclick", () => {
     if (data.extendedProps?.joinUrl) {
@@ -114,6 +130,13 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
       open();
     }
   });
+
+  const progress =
+    (form.values.subtasks?.filter((t) => t.checked)?.length /
+      form.values?.subtasks?.length) *
+    100;
+
+  const hasSubtasks = form.values?.subtasks?.length > 0;
 
   return (
     <ClickAwayListener onClickAway={deselect}>
@@ -136,6 +159,9 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
               <form
                 onSubmit={form.onSubmit((values) =>
                   editText.mutate(values, {
+                    onError: (error) => {
+                      close();
+                    },
                     onSuccess: () => {
                       close();
                     },
@@ -149,7 +175,9 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
                     label="Info"
                     {...form.getInputProps("text")}
                   />
+                  <Subtasks mutation={mutation} form={form} />
                 </Stack>
+
                 <Group justify="flex-end" mt="xl">
                   <Button variant="subtle" onClick={close}>
                     Cancel
@@ -166,7 +194,37 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
             </Modal>
           </Stack>
         )}
+
         <Card bg={color.background} p={8} w={"100%"} h={"100%"}>
+          {hasSubtasks && (
+            <Card.Section mb="xs" bg="gray">
+              <SimpleGrid
+                cols={form.values.subtasks?.length || 1}
+                spacing={"1px"}
+              >
+                {form.values?.subtasks?.map((task, index) => (
+                  <Box
+                    w="100%"
+                    key={index}
+                    h={"1.3rem"}
+                    bg={task.checked ? "green" : ""}
+                  />
+                ))}
+              </SimpleGrid>
+              <Divider />
+              <Text
+                fz={10}
+                size="xs"
+                c="dark"
+                pos="absolute"
+                right={"0.5rem"}
+                top={"0"}
+              >
+                {form.values.subtasks?.filter((t) => t.checked)?.length}/
+                {form.values.subtasks?.length}
+              </Text>
+            </Card.Section>
+          )}
           <Group
             pos="relative"
             gap={"xs"}

@@ -11,6 +11,11 @@ type CalendarEvent = {
   type?: string;
   user?: string;
   msid?: string;
+  subtasks?: {
+    id: string;
+    text: string;
+    checked: boolean;
+  };
 };
 
 type FullCalendarEvent = {
@@ -28,6 +33,11 @@ type FullCalendarEvent = {
   type: string;
   user?: string;
   text?: string;
+  subtasks?: {
+    id: string;
+    text: string;
+    checked: boolean;
+  };
   extendedProps: {
     id: string;
     text?: string;
@@ -42,5 +52,10 @@ type FullCalendarEvent = {
     user?: string;
     msid?: string;
     joinUrl?: string;
+    subtasks?: {
+      id: string;
+      text: string;
+      checked: boolean;
+    };
   };
 };
