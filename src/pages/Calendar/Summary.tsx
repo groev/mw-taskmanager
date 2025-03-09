@@ -21,10 +21,10 @@ export default function Summary({ day, tasks }: Props) {
         if (task.subtasks?.length > 0) {
           acc.checked += task.subtasks.filter((t) => t.checked).length;
           acc.total += task.subtasks.length;
-        } else {
-          acc.checked += task.checked ? 1 : 0;
-          acc.total += 1;
         }
+        acc.checked += task.checked ? 1 : 0;
+        acc.total += 1;
+
         return acc; // Return the accumulator for the next iteration
       },
       {
