@@ -131,6 +131,17 @@ function getQuery(day: string) {
   );
 }
 
+function getDays(day: string) {
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const monday = getMondayOfWeek(new Date(day));
+
+    monday.setDate(monday.getDate() + i);
+    return monday;
+  }).map((date) => isoDate(date));
+
+  return days;
+}
+
 function createTimeString(day: string, slot: number) {
   const date = new Date(day);
   date.setHours(6 + Math.floor(slot / 4));
@@ -190,4 +201,5 @@ export {
   fetchEventsFromMicrosoft,
   mapFirestore,
   getQuery,
+  getDays,
 };

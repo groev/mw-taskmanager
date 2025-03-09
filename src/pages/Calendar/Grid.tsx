@@ -4,6 +4,8 @@ import { EventInput } from "@fullcalendar/core/index.js";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import { Box, SimpleGrid } from "@mantine/core";
+
 import { useViewportSize } from "@mantine/hooks";
 
 import { useQuery } from "@tanstack/react-query";
@@ -15,9 +17,11 @@ import {
   fetchEventsFromMicrosoft,
   mapEvents,
   handleMove,
+  getDays,
   getQuery,
 } from "./helpers";
 import { useCalendarStore } from "./store";
+import Summary from "./Summary";
 
 export default function Daygrid() {
   const day = useCalendarStore((state) => state.day);
@@ -27,6 +31,7 @@ export default function Daygrid() {
 
   const { msToken } = useAuthContext();
   const setSelectedSlot = useCalendarStore((state) => state.setSelectedSlot);
+  const days = getDays(day);
 
   useEffect(() => {
     if (!day) return;
@@ -69,45 +74,58 @@ export default function Daygrid() {
   }, [day, calRef]);
 
   return (
-    <FullCalendar
-      dayHeaderFormat={{
-        weekday: "short",
-        month: "numeric",
-        day: "numeric",
-        omitCommas: true,
-      }}
-      eventContent={(data: { event: FullCalendarEvent }) => (
-        <Event data={data.event} />
-      )}
-      allDaySlot={false}
-      slotMinTime={"06:00:00"}
-      slotMaxTime={"23:00:00"}
-      expandRows={true}
-      height="1500px"
-      contentHeight={15000}
-      aspectRatio={5}
-      editable={true}
-      initialDate={day}
-      eventDrop={async (arg: unknown) =>
-        await handleMove(arg as { event: FullCalendarEvent })
-      }
-      selectable
-      eventResize={async (arg: unknown) =>
-        await handleMove(arg as { event: FullCalendarEvent })
-      }
-      ref={calRef}
-      select={(info) => setSelectedSlot(info)}
-      unselect={() => setSelectedSlot(null)}
-      unselectAuto={false}
-      unselectCancel={".form"}
-      headerToolbar={{ center: "", left: "", right: "" }}
-      plugins={[timeGridPlugin, interactionPlugin]}
-      firstDay={1}
-      slotLabelFormat={{
-        hour: "numeric",
-        omitZeroMinute: true,
-      }}
-      events={mapEvents([...events, ...msEvents]) as EventInput}
-    />
+    <>
+      <SimpleGrid cols={7} spacing={0} ml={45}>
+        {days.map((day) => (
+          <Summary
+            key={day}
+            day={day}
+            tasks={mapEvents([...events, ...msEvents]).filter(
+              (t) => t.day === day
+            )}
+          />
+        ))}
+      </SimpleGrid>
+      <FullCalendar
+        dayHeaderFormat={{
+          weekday: "short",
+          month: "numeric",
+          day: "numeric",
+          omitCommas: true,
+        }}
+        eventContent={(data: { event: FullCalendarEvent }) => (
+          <Event data={data.event} />
+        )}
+        allDaySlot={false}
+        slotMinTime={"06:00:00"}
+        slotMaxTime={"23:00:00"}
+        expandRows={true}
+        height="1500px"
+        contentHeight={15000}
+        aspectRatio={5}
+        editable={true}
+        initialDate={day}
+        eventDrop={async (arg: unknown) =>
+          await handleMove(arg as { event: FullCalendarEvent })
+        }
+        selectable
+        eventResize={async (arg: unknown) =>
+          await handleMove(arg as { event: FullCalendarEvent })
+        }
+        ref={calRef}
+        select={(info) => setSelectedSlot(info)}
+        unselect={() => setSelectedSlot(null)}
+        unselectAuto={false}
+        unselectCancel={".form"}
+        headerToolbar={{ center: "", left: "", right: "" }}
+        plugins={[timeGridPlugin, interactionPlugin]}
+        firstDay={1}
+        slotLabelFormat={{
+          hour: "numeric",
+          omitZeroMinute: true,
+        }}
+        events={mapEvents([...events, ...msEvents]) as EventInput}
+      />
+    </>
   );
 }
