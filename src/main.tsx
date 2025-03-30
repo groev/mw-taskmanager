@@ -5,6 +5,7 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import "@mantine/core/styles.css";
+import { DatesProvider } from "@mantine/dates";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 import App from "./App.tsx";

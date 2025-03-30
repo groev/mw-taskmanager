@@ -85,7 +85,27 @@ async function fetchEventsFromMicrosoft(day: string, msToken: string | null) {
 }
 
 function isoDate(date: Date) {
-  return date.toISOString().split("T")[0];
+  const pad = (n) => `${Math.floor(Math.abs(n))}`.padStart(2, "0");
+  // Get timezone offset in ISO format (+hh:mm or -hh:mm)
+  const getTimezoneOffset = (date: Date) => {
+    const tzOffset = -date.getTimezoneOffset();
+    const diff = tzOffset >= 0 ? "+" : "-";
+    return diff + pad(tzOffset / 60) + ":" + pad(tzOffset % 60);
+  };
+  const dateString =
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate()) +
+    "T" +
+    pad(date.getHours()) +
+    ":" +
+    pad(date.getMinutes()) +
+    ":" +
+    pad(date.getSeconds());
+  getTimezoneOffset(date);
+  return dateString?.slice(0, 10);
 }
 
 function mapEvents(events: CalendarEvent[]) {

@@ -40,6 +40,9 @@ export const useCalendarStore = create<CalendarStore>((set, get) => ({
     const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // adjust when day is sunday
     date.setDate(diff);
 
+    console.log(date);
+    console.log(isoDate(date));
+
     set({ day: isoDate(date) });
   },
 }));
