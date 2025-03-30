@@ -100,6 +100,7 @@ export default function Daygrid() {
         slotMinTime={"06:00:00"}
         slotMaxTime={"23:00:00"}
         expandRows={true}
+        timeZone="Europe/Berlin"
         height="1500px"
         contentHeight={15000}
         aspectRatio={5}
