@@ -1,33 +1,29 @@
-import ClickAwayListener from "react-click-away-listener";
-import { Calendar } from "@fullcalendar/core/index.js";
 import {
   ActionIcon,
+  Box,
+  Button,
   Card,
   Checkbox,
+  Divider,
+  Flex,
+  Group,
+  Modal,
+  SimpleGrid,
+  Stack,
+  Text,
   TextInput,
   Textarea,
-  Button,
-  Flex,
-  Box,
-  Group,
-  Text,
-  Modal,
-  Stack,
-  Divider,
-  SimpleGrid,
 } from "@mantine/core";
-
-import { useForm } from "@mantine/form";
-
+import { IconCopy, IconEdit, IconTrash } from "@tabler/icons-react";
+import { addEvent, deleteEvent, updateEvent } from "./helpers";
 import { useDisclosure, useEventListener } from "@mantine/hooks";
 
-import { IconEdit, IconTrash } from "@tabler/icons-react";
-
-import { useMutation } from "@tanstack/react-query";
-
-import { deleteEvent, updateEvent } from "./helpers";
-import { useCalendarStore } from "./store";
+import { Calendar } from "@fullcalendar/core/index.js";
+import ClickAwayListener from "react-click-away-listener";
 import Subtasks from "./Subtasks";
+import { useCalendarStore } from "./store";
+import { useForm } from "@mantine/form";
+import { useMutation } from "@tanstack/react-query";
 
 export default function Event({ data }: { data: FullCalendarEvent }) {
   const [opened, { open, close }] = useDisclosure();
@@ -138,6 +134,23 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
 
   const hasSubtasks = form.values?.subtasks?.length > 0;
 
+  function copy() {
+    const eventDay = data.start;
+    eventDay.setDate(eventDay.getDate() + 1);
+    addEvent({
+      ...data?.extendedProps,
+      title: data.title,
+      checked: false,
+      subtasks:
+        data?.extendedProps?.subtasks?.map((t) => {
+          return { ...t, checked: false };
+        }) || [],
+      day: eventDay.toISOString().substring(0, 10),
+    });
+  }
+
+  console.log(data);
+
   return (
     <ClickAwayListener onClickAway={deselect}>
       <Flex ref={ref} h={"100%"} onClick={() => select()}>
@@ -154,6 +167,9 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
             </ActionIcon>
             <ActionIcon>
               <IconEdit onClick={open} />
+            </ActionIcon>
+            <ActionIcon>
+              <IconCopy onClick={copy} />
             </ActionIcon>
             <Modal title="Edit edvent" centered opened={opened} onClose={close}>
               <form
