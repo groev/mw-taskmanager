@@ -57,11 +57,11 @@ async function fetchEventsFromMicrosoft(day: string, msToken: string | null) {
       // check difference based on time zone (4 or 5)
 
       const startSlot = Math.floor(
-        (start.getHours() - 4 - start.getTimezoneOffset() / 60) * 4 +
+        (start.getHours() - 5 - start.getTimezoneOffset() / 60) * 4 +
           start.getMinutes() / 15
       );
       const endSlot = Math.floor(
-        (end.getHours() - 4 - start.getTimezoneOffset() / 60) * 4 +
+        (end.getHours() - 5 - start.getTimezoneOffset() / 60) * 4 +
           end.getMinutes() / 15
       );
       events.push({

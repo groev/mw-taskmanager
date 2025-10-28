@@ -1,3 +1,5 @@
+@layer mantine, mantine-contextmenu;
+
 :root {
   --fc-small-font-size: 0.85em;
   --fc-page-bg-color: transparent;

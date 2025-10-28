@@ -1,10 +1,13 @@
-import "./fullcalendar.overrides.css";
+import { useContextMenu } from "mantine-contextmenu";
+
+import { Box } from "@mantine/core";
 
 import Backlog from "./Backlog/index";
-import { Box } from "@mantine/core";
 import EventForm from "./Eventform";
 import Grid from "./Grid";
 import Keybindings from "./Keybindings";
+
+import "./fullcalendar.overrides.css";
 
 export default function Calendar() {
   return (

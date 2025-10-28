@@ -1,3 +1,5 @@
+import { ContextMenuProvider } from "mantine-contextmenu";
+
 import ReactDOM from "react-dom/client";
 import {
   createTheme,
@@ -5,11 +7,15 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import "@mantine/core/styles.css";
-import { DatesProvider } from "@mantine/dates";
+import "@mantine/core/styles.layer.css";
+import "mantine-contextmenu/styles.layer.css";
+
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 import App from "./App.tsx";
 import { AuthContextProvider } from "./context/AuthContext.tsx";
+
+import "./global.css";
 
 const slate: MantineColorsTuple = [
   "#f1f5f9",
@@ -44,9 +50,11 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <MantineProvider theme={theme}>
-      <AuthContextProvider>
-        <App />
-      </AuthContextProvider>
+      <ContextMenuProvider>
+        <AuthContextProvider>
+          <App />
+        </AuthContextProvider>
+      </ContextMenuProvider>
     </MantineProvider>
   </QueryClientProvider>
 );

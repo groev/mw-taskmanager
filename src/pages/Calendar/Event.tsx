@@ -1,5 +1,6 @@
+import { useContextMenu } from "mantine-contextmenu";
+import ClickAwayListener from "react-click-away-listener";
 import {
-  ActionIcon,
   Box,
   Button,
   Card,
@@ -7,23 +8,25 @@ import {
   Divider,
   Flex,
   Group,
-  Modal,
+  Popover,
   SimpleGrid,
   Stack,
   Text,
   TextInput,
   Textarea,
 } from "@mantine/core";
-import { IconCopy, IconEdit, IconTrash } from "@tabler/icons-react";
-import { addEvent, deleteEvent, updateEvent } from "./helpers";
-import { useDisclosure, useEventListener } from "@mantine/hooks";
 
-import { Calendar } from "@fullcalendar/core/index.js";
-import ClickAwayListener from "react-click-away-listener";
-import Subtasks from "./Subtasks";
-import { useCalendarStore } from "./store";
 import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+
+import { IconCopy, IconTrash } from "@tabler/icons-react";
+
 import { useMutation } from "@tanstack/react-query";
+
+import { addEvent, deleteEvent, updateEvent } from "./helpers";
+import { useCalendarStore } from "./store";
+import Subtasks from "./Subtasks";
+import classes from "./calendar.module.css";
 
 export default function Event({ data }: { data: FullCalendarEvent }) {
   const [opened, { open, close }] = useDisclosure();
@@ -95,7 +98,10 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
   });
 
   const deselect = () => {
-    if (selectedEvent?.id == data.id) setSelectedEvent(null);
+    if (selectedEvent?.id == data.id) {
+      setSelectedEvent(null);
+    }
+    close();
   };
 
   const select = () => {
@@ -117,21 +123,6 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
     },
   });
 
-  const ref = useEventListener("dblclick", () => {
-    if (data.extendedProps?.joinUrl) {
-      console.log(data.extendedProps);
-      window.open(data.extendedProps?.joinUrl, "_blank");
-    }
-    if (!isMs) {
-      open();
-    }
-  });
-
-  const progress =
-    (form.values.subtasks?.filter((t) => t.checked)?.length /
-      form.values?.subtasks?.length) *
-    100;
-
   const hasSubtasks = form.values?.subtasks?.length > 0;
 
   function copy() {
@@ -149,29 +140,106 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
     });
   }
 
-  console.log(data);
+  const { showContextMenu } = useContextMenu();
 
   return (
-    <ClickAwayListener onClickAway={deselect}>
-      <Flex ref={ref} h={"100%"} onClick={() => select()}>
-        {selectedEvent?.id == data.id && (
-          <Stack
-            gap={2}
-            pos="absolute"
-            top="0"
-            left="-2rem"
-            style={{ zIndex: 999999 }}
-          >
-            <ActionIcon onClick={() => deleteEvent(selectedEvent.id)}>
-              <IconTrash />
-            </ActionIcon>
-            <ActionIcon>
-              <IconEdit onClick={open} />
-            </ActionIcon>
-            <ActionIcon>
-              <IconCopy onClick={copy} />
-            </ActionIcon>
-            <Modal title="Edit edvent" centered opened={opened} onClose={close}>
+    <Popover
+      position="left"
+      opened={opened}
+      onClose={close}
+      closeOnClickOutside={true}
+    >
+      <Popover.Target>
+        <Flex
+          h={"100%"}
+          onClick={() => select()}
+          onDoubleClick={() => open()}
+          onContextMenu={
+            !isMs &&
+            showContextMenu(
+              [
+                {
+                  key: "copy",
+                  icon: <IconCopy size={16} />,
+                  title: "Kopieren",
+                  onClick: () => copy(),
+                },
+                {
+                  key: "delete",
+                  color: "red",
+                  icon: <IconTrash size={16} />,
+                  title: "Löschen",
+                  onClick: () => deleteEvent(data.id),
+                },
+              ],
+              {
+                classNames: {
+                  item: classes.item,
+                },
+              }
+            )
+          }
+        >
+          <Card bg={color.background} p={8} w={"100%"} h={"100%"}>
+            {hasSubtasks && (
+              <Card.Section mb="xs" bg="gray">
+                <SimpleGrid
+                  cols={form.values.subtasks?.length || 1}
+                  spacing={"1px"}
+                >
+                  {form.values?.subtasks?.map((task, index) => (
+                    <Box
+                      w="100%"
+                      key={index}
+                      h={"1.3rem"}
+                      bg={task.checked ? "green" : ""}
+                    />
+                  ))}
+                </SimpleGrid>
+                <Divider />
+                <Text
+                  fz={10}
+                  size="xs"
+                  c="dark"
+                  pos="absolute"
+                  right={"0.5rem"}
+                  top={"0"}
+                >
+                  {form.values.subtasks?.filter((t) => t.checked)?.length}/
+                  {form.values.subtasks?.length}
+                </Text>
+              </Card.Section>
+            )}
+            <Group
+              pos="relative"
+              gap={"xs"}
+              justify="flex-start"
+              align="top"
+              style={{ flexWrap: "nowrap" }}
+            >
+              {!isMs && (
+                <Box flex={0}>
+                  <Checkbox
+                    checked={data.extendedProps.checked}
+                    onChange={(e) => mutation.mutate(e.target.checked)}
+                    size="xs"
+                  />
+                </Box>
+              )}
+              <Box flex={"auto"}>
+                <Text inline fz={12} flex={"auto"} c={color.text} fw={500}>
+                  {data.title}
+                </Text>
+              </Box>
+            </Group>
+          </Card>
+        </Flex>
+      </Popover.Target>
+
+      <Popover.Dropdown>
+        <ClickAwayListener onClickAway={deselect}>
+          <Card style={{ zIndex: 99999 }}>
+            {!isMs ? (
               <form
                 onSubmit={form.onSubmit((values) =>
                   editText.mutate(values, {
@@ -195,76 +263,30 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
                 </Stack>
 
                 <Group justify="flex-end" mt="xl">
-                  <Button variant="subtle" onClick={close}>
-                    Cancel
-                  </Button>
                   <Button
                     loading={editText.isPending}
                     type="submit"
-                    variant="primary"
+                    variant="light"
                   >
                     Save
                   </Button>
                 </Group>
               </form>
-            </Modal>
-          </Stack>
-        )}
-
-        <Card bg={color.background} p={8} w={"100%"} h={"100%"}>
-          {hasSubtasks && (
-            <Card.Section mb="xs" bg="gray">
-              <SimpleGrid
-                cols={form.values.subtasks?.length || 1}
-                spacing={"1px"}
-              >
-                {form.values?.subtasks?.map((task, index) => (
-                  <Box
-                    w="100%"
-                    key={index}
-                    h={"1.3rem"}
-                    bg={task.checked ? "green" : ""}
-                  />
-                ))}
-              </SimpleGrid>
-              <Divider />
-              <Text
-                fz={10}
-                size="xs"
-                c="dark"
-                pos="absolute"
-                right={"0.5rem"}
-                top={"0"}
-              >
-                {form.values.subtasks?.filter((t) => t.checked)?.length}/
-                {form.values.subtasks?.length}
-              </Text>
-            </Card.Section>
-          )}
-          <Group
-            pos="relative"
-            gap={"xs"}
-            justify="flex-start"
-            align="top"
-            style={{ flexWrap: "nowrap" }}
-          >
-            {!isMs && (
-              <Box flex={0}>
-                <Checkbox
-                  checked={data.extendedProps.checked}
-                  onChange={(e) => mutation.mutate(e.target.checked)}
-                  size="xs"
-                />
+            ) : (
+              <Box>
+                <Button
+                  component="a"
+                  href={data.extendedProps.joinUrl}
+                  target="_blank"
+                  variant="light"
+                >
+                  Join Meeting
+                </Button>
               </Box>
             )}
-            <Box flex={"auto"}>
-              <Text inline fz={12} flex={"auto"} c={color.text} fw={500}>
-                {data.title}
-              </Text>
-            </Box>
-          </Group>
-        </Card>
-      </Flex>
-    </ClickAwayListener>
+          </Card>
+        </ClickAwayListener>
+      </Popover.Dropdown>
+    </Popover>
   );
 }

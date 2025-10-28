@@ -75,17 +75,6 @@ export default function Daygrid() {
 
   return (
     <>
-      <SimpleGrid cols={7} spacing={0} ml={45}>
-        {days.map((day) => (
-          <Summary
-            key={day}
-            day={day}
-            tasks={mapEvents([...events, ...msEvents]).filter(
-              (t) => t.day === day
-            )}
-          />
-        ))}
-      </SimpleGrid>
       <FullCalendar
         dayHeaderFormat={{
           weekday: "short",
