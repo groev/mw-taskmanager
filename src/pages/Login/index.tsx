@@ -15,6 +15,7 @@ import {
 
 import { useAuthContext } from "@/context/AuthContext";
 import Logo from "@/images/Logo";
+import Mailform from "./Mailform";
 
 export default function Home() {
   const auth = getAuth();
@@ -78,6 +79,8 @@ export default function Home() {
               Github
             </Button>
           </Stack>
+          <Divider label="Oder melde dich an" labelPosition="center" />
+          <Mailform />
         </Stack>
       </Center>
     </Container>
