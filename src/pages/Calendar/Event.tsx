@@ -28,7 +28,10 @@ import { useCalendarStore } from "./store";
 import Subtasks from "./Subtasks";
 import classes from "./calendar.module.css";
 
+import { useViewportSize } from "@mantine/hooks";
+
 export default function Event({ data }: { data: FullCalendarEvent }) {
+  const { width } = useViewportSize();
   const [opened, { open, close }] = useDisclosure();
   const setSelectedEvent = useCalendarStore((state) => state.setSelectedEvent);
   const selectedEvent = useCalendarStore((state) => state.selectedEvent);
@@ -144,7 +147,7 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
 
   return (
     <Popover
-      position="left"
+      position={width > 768 ? "left" : "bottom"}
       opened={opened}
       onClose={close}
       closeOnClickOutside={true}
@@ -152,7 +155,7 @@ export default function Event({ data }: { data: FullCalendarEvent }) {
       <Popover.Target>
         <Flex
           h={"100%"}
-          onClick={() => select()}
+          onClick={() => (width > 768 ? select() : open())}
           onDoubleClick={() => open()}
           onContextMenu={
             !isMs &&
